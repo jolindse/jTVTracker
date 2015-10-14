@@ -11,6 +11,8 @@ public class Season {
 	private List<Episode> episodeList;
 	
 	public Season (){
+		
+	
 	seasonNumber = 0;
 	numberOfEpisodes = 0;
 	seasonStartDate.now();
