@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,6 +27,7 @@ public class GetShow {
 	private String showName, type, lang, status, premDate, showSummary, prevEpUrl; 
 	private String[] genre, schedule, network;
 	private int runtime, updateTime;
+	private Gson converter;
 	
 
 	public GetShow(int id) throws IOException {
@@ -64,11 +66,25 @@ public class GetShow {
 	
 	public String getGenres(){
 		String strReturn = "";
-		List<String> genreList = new ArrayList<>();
 		JsonArray jsGenre = rootObject.getAsJsonArray("genres");
-		for (int i=0; i<jsGenre.size();i++){
-			genreList.add(jsGenre.get(i).getAsString());
+		String[] genreList = convJsonArray(jsGenre);
+		for (String currGen: genreList){
+			strReturn += currGen + ", ";
 		}
 		return strReturn;
+	}
+	
+	public boolean getStatus(){
+		boolean runningShow = false;
+		String showString = rootObject.get("status").getAsString();
+		if (showString.equalsIgnoreCase("Running")){
+			runningShow = true;
+		}
+		return runningShow;
+	}
+	
+	private String[] convJsonArray(JsonArray currJArray){
+		String[] currArray = new String[currJArray.size()];
+		return currArray;
 	}
 }
