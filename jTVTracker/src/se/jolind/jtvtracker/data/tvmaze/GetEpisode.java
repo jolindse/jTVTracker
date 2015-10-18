@@ -1,4 +1,4 @@
-package se.jolind.jtvtracker.data;
+package se.jolind.jtvtracker.data.tvmaze;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,19 +11,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class GetEpisode {
-	
+/*
+ *  Wrapper class for episode info from tvmaze.com
+ *  ----------------------------------------------
+ *  Parses json response from tvmaze.
+ */
 
-	/*
-	 * Episode variables
-	 * Declaration of variables retrieved from the Json-response of episode check.
-	 */
-	
-	private int epId, season, epNumber;
-	private String epName, airDate, airTime, timeZone, epSummary;
+
+public class GetEpisode {
 
 	private JsonObject rootObject;
-	private String epBaseUrl = "http://apt.tvmaze.com/episodes/";
+	private String epBaseUrl = "http://api.tvmaze.com/episodes/";
 
 	public GetEpisode(int id) throws IOException {
 		String sURL = epBaseUrl + Integer.toString(id);
@@ -39,6 +37,31 @@ public class GetEpisode {
 		rootObject = root.getAsJsonObject(); // May be an array, may be
 	}
 
+	public String getName(){
+		return rootObject.get("name").getAsString();
+	}
 	
+	public int getSeason(){
+		return rootObject.get("season").getAsInt();
+	}
+	
+	public int getNumber(){
+		return rootObject.get("number").getAsInt();
+	}
+	
+	public String getAirDate(){
+		return rootObject.get("airdate").getAsString();
+	}
+	
+	public String getAirTime(){
+		return rootObject.get("airtime").getAsString();
+	}
 
+	public String getAirStamp(){
+		return rootObject.get("airstamp").getAsString();
+	}
+	
+	public String getSummary(){
+		return rootObject.get("summary").getAsString();
+	}
 }
