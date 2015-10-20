@@ -1,7 +1,9 @@
 package se.jolind.jtvtracker.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+
+import se.jolind.jtvtracker.data.tvmaze.GetEpisode;
+import se.jolind.jtvtracker.data.tvmaze.GetShow;
 
 /*
  *  Show class. 
@@ -12,86 +14,42 @@ import java.util.List;
  */
 public class Show {
 
-	private String name, url, officialUrl;
-	private int id, currSeason, latestEpisode, nextEpisode;
-	private List <Season> seasons;
+	private GetShow currShow;
+	private String name, lang, url, genres;
+	private String[] imgArray;
+	private int id, runtime, numberSeasons, latestEpisode, nextEpisode;
+	private Season[] seasons;
 	private boolean activeShow;
 	
-	public Show() {
-		seasons = new ArrayList<Season>();
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getOfficialUrl() {
-		return officialUrl;
-	}
-
-	public void setOfficialUrl(String officialUrl) {
-		this.officialUrl = officialUrl;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
+	public Show(int id) {
 		this.id = id;
 	}
 
-	public int getCurrSeason() {
-		return currSeason;
+	public Show(GetShow currShow) throws NumberFormatException, IOException{
+		this.currShow = currShow;
+		
+		name = currShow.getName();
+		lang = currShow.getLang();
+		genres = currShow.getGenres();
+		imgArray = currShow.getImageUrl();
+		id = currShow.getId();
+		runtime = currShow.getRuntime();
+		numberSeasons = Integer.parseInt(currShow.getNumberOfSeasons());
+		activeShow = currShow.getStatus();
+		seasons = makeSeasons(currShow.getAllEpId());
 	}
-
-	public void setCurrSeason(int currSeason) {
-		this.currSeason = currSeason;
+		
+	private Season[] makeSeasons(int[] allEps) throws IOException{
+		Season[] seasonArray = new Season[numberSeasons];
+		int currSeasonNumber = 1;
+		Season currSeason = new Season();
+		for (int currId: allEps){
+			GetEpisode currEp = new GetEpisode(currId);
+			if (currEp.getSeason() == currSeasonNumber){
+				
+			}
+			
+			
+		}
 	}
-
-	public int getLatestEpisode() {
-		return latestEpisode;
-	}
-
-	public void setLatestEpisode(int latestEpisode) {
-		this.latestEpisode = latestEpisode;
-	}
-
-	public int getNextEpisode() {
-		return nextEpisode;
-	}
-
-	public void setNextEpisode(int nextEpisode) {
-		this.nextEpisode = nextEpisode;
-	}
-
-	public List<Season> getSeasons() {
-		return seasons;
-	}
-
-	public void setSeasons(List<Season> seasons) {
-		this.seasons = seasons;
-	}
-
-	public boolean isActiveShow() {
-		return activeShow;
-	}
-
-	public void setActiveShow(boolean activeShow) {
-		this.activeShow = activeShow;
-	}
-	
-	
 }

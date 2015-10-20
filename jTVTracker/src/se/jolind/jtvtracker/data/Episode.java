@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 public class Episode {
 
 	private int number;
-	private String recap;
+	private String recap, url;
 	private ZonedDateTime epDate;
 	
 	public Episode(int number, String recap, ZonedDateTime epDate){

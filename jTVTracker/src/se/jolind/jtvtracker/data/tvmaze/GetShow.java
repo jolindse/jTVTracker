@@ -125,7 +125,7 @@ public class GetShow {
 		return imageArray;
 	}
 
-	public String[] getAllEpId() throws IOException{
+	public int[] getAllEpId() throws IOException{
 		/*
 		 * Method to get all episode IDs for a series and return them as a 
 		 * String-array. Gets a new Json from tvmaze wich contains all episode info.
@@ -139,16 +139,13 @@ public class GetShow {
 		JsonParser parser = new JsonParser();
 		JsonArray epRoot = parser.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonArray(); 
 		
-		String[] episodeArray = new String[epRoot.size()];
+		int[] episodeArray = new int[epRoot.size()];
 		
 		for (int i=0; i < epRoot.size(); i++){
 			JsonObject currEp = epRoot.get(i).getAsJsonObject();
 			JsonObject links = currEp.getAsJsonObject("_links");
 			JsonObject currUrl = links.getAsJsonObject("self");
-			episodeArray[i] = (currUrl.get("href").getAsString());
-		}
-		for(String currLid: episodeArray){
-			System.out.println(currLid);
+			episodeArray[i] = Integer.parseInt(getEpisodeId((currUrl.get("href").getAsString())));
 		}
 		return episodeArray;
 	}

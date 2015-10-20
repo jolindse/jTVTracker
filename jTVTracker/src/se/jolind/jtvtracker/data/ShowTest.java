@@ -1,6 +1,7 @@
 package se.jolind.jtvtracker.data;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import se.jolind.jtvtracker.data.tvmaze.GetShow;
 
@@ -27,6 +28,20 @@ public class ShowTest {
 		System.out.println(got.getNumberOfSeasons());
 		
 		String[] testeps = got.getAllEpId();
+	}
+	
+	public void testShow(){
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Välj show id:");
+		int showId = sc.nextInt();
+		try {
+			GetShow currShow = new GetShow(showId);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }
