@@ -30,10 +30,20 @@ public class Season {
 		}
 	}
 
-	public void setNumberOfEpisodes(int numberOfEpisodes) {
-		this.numberOfEpisodes = numberOfEpisodes;
+	public void setNumberOfEpisodes() {
+		numberOfEpisodes = episodeList.size();
 	}
-
+	
+	public void setSeasonNumber(int number){
+		seasonNumber = number;
+	}
+	
+	public void printSeasonEps(){
+		System.out.println(episodeList);
+		for (Episode currEp: episodeList){
+			System.out.println(currEp);
+		}
+	}
 	/*
 	 * public void setSeasonStartDate(LocalDate seasonStartDate) {
 	 * this.seasonStartDate = seasonStartDate; }

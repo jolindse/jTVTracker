@@ -5,13 +5,13 @@ import java.time.ZonedDateTime;
 public class Episode {
 
 	private int number;
-	private String recap, url;
-	private ZonedDateTime epDate;
+	private String epDate, recap, url;
 	
-	public Episode(int number, String recap, ZonedDateTime epDate){
+	public Episode(int number, String recap, String url, String epDate){
 		this.number = number;
 		this.recap = recap;
 		this.epDate = epDate;
+		this.url = url;
 	}
 
 	public int getNumber() {
@@ -29,7 +29,7 @@ public class Episode {
 	public void setRecap(String recap) {
 		this.recap = recap;
 	}
-
+/*
 	public ZonedDateTime getEpDate() {
 		return epDate;
 	}
@@ -37,6 +37,11 @@ public class Episode {
 	public void setEpDate(ZonedDateTime epDate) {
 		this.epDate = epDate;
 	}
+*/
 
+	@Override
+	public String toString() {
+		return "Nummer "+ number + "\nSändes: " + epDate + "\nSummering: " + recap + "\nUrl: " + url + "\n";
+	}
 	
 }

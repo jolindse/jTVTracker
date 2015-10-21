@@ -20,11 +20,12 @@ import com.google.gson.JsonParser;
 
 public class GetEpisode {
 
+	private String sURL;
 	private JsonObject rootObject;
 	private String epBaseUrl = "http://api.tvmaze.com/episodes/";
 
 	public GetEpisode(int id) throws IOException {
-		String sURL = epBaseUrl + Integer.toString(id);
+		sURL = epBaseUrl + Integer.toString(id);
 
 		// Connect to the URL using java's native library
 		URL url = new URL(sURL);
@@ -64,4 +65,10 @@ public class GetEpisode {
 	public String getSummary(){
 		return rootObject.get("summary").getAsString();
 	}
+
+	public String getsURL() {
+		return sURL;
+	}
+
+
 }

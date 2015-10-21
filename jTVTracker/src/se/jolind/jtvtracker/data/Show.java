@@ -1,6 +1,8 @@
 package se.jolind.jtvtracker.data;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import se.jolind.jtvtracker.data.tvmaze.GetEpisode;
 import se.jolind.jtvtracker.data.tvmaze.GetShow;
@@ -18,16 +20,18 @@ public class Show {
 	private String name, lang, url, genres;
 	private String[] imgArray;
 	private int id, runtime, numberSeasons, latestEpisode, nextEpisode;
-	private Season[] seasons;
+	private Map<Integer, Season> seasons;
 	private boolean activeShow;
-	
+
+	/*
 	public Show(int id) {
 		this.id = id;
 	}
+	*/
+	
+	public Show(int id) throws NumberFormatException, IOException {
+		GetShow currShow = new GetShow(id);
 
-	public Show(GetShow currShow) throws NumberFormatException, IOException{
-		this.currShow = currShow;
-		
 		name = currShow.getName();
 		lang = currShow.getLang();
 		genres = currShow.getGenres();
@@ -38,18 +42,44 @@ public class Show {
 		activeShow = currShow.getStatus();
 		seasons = makeSeasons(currShow.getAllEpId());
 	}
-		
-	private Season[] makeSeasons(int[] allEps) throws IOException{
-		Season[] seasonArray = new Season[numberSeasons];
-		int currSeasonNumber = 1;
-		Season currSeason = new Season();
-		for (int currId: allEps){
-			GetEpisode currEp = new GetEpisode(currId);
-			if (currEp.getSeason() == currSeasonNumber){
-				
-			}
-			
-			
+	
+	public void printShow(){
+		System.out.println(seasons);
+		for (int i=1; i<numberSeasons;i++){
+			Season currSeason = seasons.get(i);
+			currSeason.printSeasonEps();
 		}
+	}
+
+	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
+		// Init
+		Map<Integer, Season> seasonMap = new HashMap<>();
+		Season currSeason = new Season();
+		int currSeasonNumber = 1;
+
+		for (int currId : allEps) {
+			GetEpisode currEp = new GetEpisode(currId);
+			int episodeSeason = currEp.getSeason();
+			if (episodeSeason == currSeasonNumber) {
+				Episode ep = new Episode(currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
+						currEp.getAirDate());
+				System.out.println("Addar episode "+ep.getNumber()+" från säsong "+currSeasonNumber+" till mapen."); // Testar
+				currSeason.addEpisode(ep);
+				currSeason.setSeasonNumber(currSeasonNumber);
+			} else {
+				currSeason.setNumberOfEpisodes();
+				seasonMap.put(currSeasonNumber, currSeason);
+				currSeasonNumber = currEp.getSeason();
+				System.out.println("Skapar ny säsong!");
+				currSeason = new Season();
+				Episode ep = new Episode(currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
+						currEp.getAirDate());
+				System.out.println("Addar episode "+ep.getNumber()+" från säsong "+currSeasonNumber+" till mapen."); // Testar
+				currSeason.addEpisode(ep);
+				currSeason.setSeasonNumber(currSeasonNumber);
+			}
+		}
+		System.out.println(seasonMap);//Testar
+		return seasonMap;
 	}
 }
