@@ -14,6 +14,7 @@ import se.jolind.jtvtracker.data.tvmaze.GetShow;
  *  with the current show.
  *  
  */
+
 public class Show {
 
 	private GetShow currShow;
@@ -23,12 +24,6 @@ public class Show {
 	private Map<Integer, Season> seasons;
 	private boolean activeShow;
 
-	/*
-	public Show(int id) {
-		this.id = id;
-	}
-	*/
-	
 	public Show(int id) throws NumberFormatException, IOException {
 		GetShow currShow = new GetShow(id);
 
@@ -52,7 +47,7 @@ public class Show {
 	}
 
 	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
-		// Init
+
 		Map<Integer, Season> seasonMap = new HashMap<>();
 		Season currSeason = new Season();
 		int currSeasonNumber = 1;
@@ -63,18 +58,15 @@ public class Show {
 			if (episodeSeason == currSeasonNumber) {
 				Episode ep = new Episode(currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
 						currEp.getAirDate());
-				System.out.println("Addar episode "+ep.getNumber()+" från säsong "+currSeasonNumber+" till mapen."); // Testar
 				currSeason.addEpisode(ep);
 				currSeason.setSeasonNumber(currSeasonNumber);
 			} else {
 				currSeason.setNumberOfEpisodes();
 				seasonMap.put(currSeasonNumber, currSeason);
 				currSeasonNumber = currEp.getSeason();
-				System.out.println("Skapar ny säsong!");
 				currSeason = new Season();
 				Episode ep = new Episode(currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
 						currEp.getAirDate());
-				System.out.println("Addar episode "+ep.getNumber()+" från säsong "+currSeasonNumber+" till mapen."); // Testar
 				currSeason.addEpisode(ep);
 				currSeason.setSeasonNumber(currSeasonNumber);
 			}

@@ -6,12 +6,21 @@ public class Episode {
 
 	private int number;
 	private String epDate, recap, url;
+	private String[] imgArray;
 	
 	public Episode(int number, String recap, String url, String epDate){
 		this.number = number;
 		this.recap = recap;
 		this.epDate = epDate;
 		this.url = url;
+	}
+	
+	public Episode(int number, String recap, String url, String epDate, String[] imgArray){
+		this.number = number;
+		this.recap = recap;
+		this.epDate = epDate;
+		this.url = url;
+		this.imgArray = imgArray;
 	}
 
 	public int getNumber() {
