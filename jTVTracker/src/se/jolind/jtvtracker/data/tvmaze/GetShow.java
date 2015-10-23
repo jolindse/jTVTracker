@@ -24,13 +24,11 @@ import com.google.gson.JsonSyntaxException;
  * 
  */
 
-
 public class GetShow {
-	
+
 	private String showBaseUrl = "http://api.tvmaze.com/shows/";
 	private JsonObject rootObject;
 	private Gson converter;
-	
 
 	public GetShow(int id) throws IOException {
 		String sURL = showBaseUrl + Integer.toString(id);
@@ -38,86 +36,100 @@ public class GetShow {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 		request.connect();
 		JsonParser jp = new JsonParser();
-		JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent())); 
+		JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
 		rootObject = root.getAsJsonObject();
 	}
 
 	// INFORMATION EXTRACTION METHODS
-	
-	public int getId(){
+
+	public int getId() {
 		return rootObject.get("id").getAsInt();
 	}
-	
-	public int getRuntime(){
+
+	public int getRuntime() {
 		return rootObject.get("runtime").getAsInt();
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return rootObject.get("name").getAsString();
 	}
-	
-	public String getType(){
+
+	public String getType() {
 		return rootObject.get("type").getAsString();
 	}
-	
-	public String getLang(){
+
+	public String getLang() {
 		return rootObject.get("language").getAsString();
 	}
 
-	public String getSummary(){
+	public String getSummary() {
 		return rootObject.get("summary").getAsString();
 	}
-	
-	public String getPreEpUrl(){
+
+	public String getPreEpUrl() {
 		JsonObject links = rootObject.getAsJsonObject("_links");
 		JsonObject previous = links.getAsJsonObject("previousepisode");
 		return previous.get("href").getAsString();
 	}
-	
-	public String getGenres(){
-		String strReturn = "";
-		JsonArray jsGenre = rootObject.getAsJsonArray("genres");
-		String[] genreList = convJsonArray(jsGenre);
-		for (String currGen: genreList){
-			strReturn += currGen + ", ";
-		}
-		return strReturn;
-	}
-	
-	public boolean getStatus(){
-		boolean runningShow = false;
-		String showString = rootObject.get("status").getAsString();
-		if (showString.equalsIgnoreCase("Running")){
-			runningShow = true;
-		}
-		return runningShow;
-	}
-	
-	public String getNextEpUrl(){
+
+	public String getNextEpUrl() {
 		JsonObject links = rootObject.getAsJsonObject("_links");
 		String strReturn = "No information";
 		try {
 			JsonObject previous = links.getAsJsonObject("nextepisode");
 			strReturn = previous.get("href").getAsString();
-		} catch (NullPointerException e){
+		} catch (NullPointerException e) {
 		}
 		return strReturn;
+	}
+
+	public String getGenres() {
+		String strReturn = "";
+		JsonArray jsGenre = rootObject.getAsJsonArray("genres");
+		String[] genreList = convJsonArray(jsGenre);
+		for (String currGen : genreList) {
+			strReturn += currGen + ", ";
 		}
-	
-	public String getSchedule(){
-		String schedule = "";
+		return strReturn;
+	}
+
+	public boolean getStatus() {
+		boolean runningShow = false;
+		String showString = rootObject.get("status").getAsString();
+		if (showString.equalsIgnoreCase("Running")) {
+			runningShow = true;
+		}
+		return runningShow;
+	}
+
+	public String[] getScheduleDays() {
 		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
 		JsonArray jsDays = jsSchedule.getAsJsonArray("days");
 		String[] days = convJsonArray(jsDays);
-		String airTime = jsSchedule.get("time").getAsString();
-		schedule += airTime;
-		for (String currDay: days){
-			schedule += " "+currDay;
-		}
-		return schedule;
+		return days;
 	}
-	
-	public String[] getImageUrl(){
+
+	public String getScheduleTime() {
+		String airTime = "";
+		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
+		airTime = jsSchedule.get("time").getAsString();
+		return airTime;
+	}
+
+	public String getTimeZone() {
+		JsonObject network = rootObject.getAsJsonObject("network");
+		JsonObject localInfo = network.getAsJsonObject("country");
+		String timeZone = localInfo.get("timezone").getAsString();
+		return timeZone;
+	}
+
+	public String getNetwork() {
+		JsonObject network = rootObject.getAsJsonObject("network");
+		String networkName = network.get("name").getAsString();
+		return networkName;
+	}
+
+	public String[] getImageUrl() {
 		String[] imageArray = new String[2];
 		JsonObject image = rootObject.getAsJsonObject("image");
 		imageArray[0] = image.get("medium").getAsString();
@@ -125,43 +137,53 @@ public class GetShow {
 		return imageArray;
 	}
 
-	public int[] getAllEpId() throws IOException{
+	public int getUpdatedTime() {
+		int updateTime = rootObject.get("updated").getAsInt();
+		return updateTime;
+	}
+
+	public int[] getAllEpId() throws IOException {
 		/*
-		 * Method to get all episode IDs for a series and return them as a 
-		 * String-array. Gets a new Json from tvmaze wich contains all episode info.
+		 * Method to get all episode IDs for a series and return them as a
+		 * String-array. Gets a new Json from tvmaze wich contains all episode
+		 * info.
 		 */
-		
+
 		String currId = Integer.toString(getId());
-		String epURL = "http://api.tvmaze.com/shows/"+currId+"/episodes";
+		String epURL = "http://api.tvmaze.com/shows/" + currId + "/episodes";
 		URL epUrl = new URL(epURL);
-		HttpURLConnection request = (HttpURLConnection) epUrl.openConnection();
+		HttpURLConnection request;
+
+		request = (HttpURLConnection) epUrl.openConnection();
 		request.connect();
 		JsonParser parser = new JsonParser();
-		JsonArray epRoot = parser.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonArray(); 
-		
+		JsonArray epRoot = parser.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonArray();
+
 		int[] episodeArray = new int[epRoot.size()];
-		
-		for (int i=0; i < epRoot.size(); i++){
+
+		for (int i = 0; i < epRoot.size(); i++) {
 			JsonObject currEp = epRoot.get(i).getAsJsonObject();
 			JsonObject links = currEp.getAsJsonObject("_links");
 			JsonObject currUrl = links.getAsJsonObject("self");
 			episodeArray[i] = Integer.parseInt(getEpisodeId((currUrl.get("href").getAsString())));
 		}
 		return episodeArray;
+
 	}
-	
-	public String getNumberOfSeasons() throws NumberFormatException, IOException{
+
+	public String getNumberOfSeasons() throws NumberFormatException, IOException {
 		GetEpisode latestEp = new GetEpisode(Integer.parseInt(getEpisodeId(getPreEpUrl())));
 		return Integer.toString(latestEp.getSeason());
 	}
 
 	// INTERNAL METHODS
-	
-	private String getEpisodeId(String epUrl){
+
+	private String getEpisodeId(String epUrl) {
 		return epUrl.substring(31);
-		
+
 	}
-	private String[] convJsonArray(JsonArray currJArray){
+
+	private String[] convJsonArray(JsonArray currJArray) {
 		String[] currArray = new String[currJArray.size()];
 		converter = new Gson();
 		currArray = converter.fromJson(currJArray, String[].class);
