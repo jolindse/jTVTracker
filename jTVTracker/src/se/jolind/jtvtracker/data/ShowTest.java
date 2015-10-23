@@ -27,6 +27,12 @@ public class ShowTest {
 		
 	}
 	
+	public void testDates(){
+		AirTime airtime = new AirTime("8:00", "2015-04-03", "America/New_York");
+		System.out.println(airtime.getZonedDateAsString() + " at " + airtime.getZonedTimeAsString());
+		//System.out.println(airtime.getLocalDateAsString() + " at " + airtime.getLocalTimeAsString());
+	}
+	
 	public void doTest(int id){
 		Show currShow;
 		try {

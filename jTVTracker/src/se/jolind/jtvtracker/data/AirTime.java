@@ -9,6 +9,7 @@ public class AirTime {
 
 	private ZonedDateTime origDateTime;
 	private LocalDateTime localDateTime;
+	private Instant absoluteTime;
 
 	public AirTime() {
 
@@ -30,43 +31,49 @@ public class AirTime {
 		ZoneId origZone = ZoneId.of(timeZone);
 		origDateTime = ZonedDateTime.of(dateArray[0], dateArray[1], dateArray[2], timeArray[0], timeArray[1], 0, 0,
 				origZone);
-		Instant absoluteTime = origDateTime.toInstant();
+		absoluteTime = origDateTime.toInstant();
 	}
 
-	public void getLocalTime() {
-
+	public LocalDateTime getLocalTime() {
+		LocalDateTime localDateTime = LocalDateTime.from(absoluteTime);
+		return localDateTime;
 	}
-
-	public void getLocalDate() {
-		// Convert zoned date to local date and return
+	
+	public ZonedDateTime getZonedTime() {
+		return origDateTime;
+		
 	}
-
-	public void getZonedTime() {
-		// Get zoned time in proper object
-	}
-
-	public void getZonedDate() {
-		// Get zoned date in proper object
-	}
-
+	
 	public String getLocalTimeAsString() {
-		// Convert zoned time to localtime and return as string
-		return "";
+		LocalDateTime localTime = getLocalTime();
+		int hour = localTime.getHour();
+		int minute = localTime.getMinute();
+		return hour+":"+minute;
 	}
 
 	public String getLocalDateAsString() {
 		// Convert zoned date to local date and return as string
-		return "";
+		LocalDateTime localTime = getLocalTime();
+		int year = localTime.getYear();
+		int month = localTime.getMonthValue();
+		int day = localTime.getDayOfMonth();
+		return year+"-"+month+"-"+day;
 	}
 
 	public String getZonedTimeAsString() {
-		// Get zoned time as string
-		return "";
+		// Return the time zone time as string
+		int zHour = origDateTime.getHour();
+		int zMinute = origDateTime.getMinute();
+		return String.format("%02d:%02d",zHour,zMinute);
 	}
 
 	public String getZonedDateAsString() {
 		// Get zoned date as string
-		return "";
+		
+		int zYear = origDateTime.getYear();
+		int zMonth = origDateTime.getMonthValue();
+		int zDay = origDateTime.getDayOfMonth();
+		return String.format("%04d-%02d-%02d", zYear, zMonth, zDay);
 	}
 
 	private void convertIndata() {
