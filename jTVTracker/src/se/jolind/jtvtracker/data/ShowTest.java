@@ -14,35 +14,51 @@ public class ShowTest {
 	
 	
 	public void testShow(){
+		boolean keepMenu = true;
+		
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("Välj show id:");
 		int showId = sc.nextInt();
-		try {
-			GetShow currShow = new GetShow(showId);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		Show currShow = new Show(showId);
+		System.out.println("Scannar showen!");
+		currShow.scanSeasons();
+		System.out.println("Färdig scannat!");
+		
+		while (keepMenu){
+			System.out.println(currShow.getName() + " antal säsonger: "+currShow.getNumberSeasons()+" antal episoder: "+currShow.getLatestEpisode()+"\n\n");
+			System.out.println("Välj:\n"
+					+"1. Visa episod\n"
+					+"2. Skriv ut alla episoder\n"
+					+"3. Avsluta\n");
+			String choice = sc.nextLine();
+			switch(choice){
+			case "1":
+				System.out.println("Välj säsong:");
+				int season = sc.nextInt();
+				System.out.println("Välj episod:");
+				int episode = sc.nextInt();
+				System.out.println(currShow.printEpisode(season, episode));
+				break;
+			case "2":
+				currShow.printShow();
+				break;
+			case "3":
+				keepMenu = false;
+				break;
+			}
+			
+					
 		}
 		
 	}
 	
 	public void testDates(){
-		AirTime airtime = new AirTime("8:00", "2015-04-03", "America/New_York");
-		System.out.println(airtime.getZonedDateAsString() + " at " + airtime.getZonedTimeAsString());
-		//System.out.println(airtime.getLocalDateAsString() + " at " + airtime.getLocalTimeAsString());
+		AirTime airtime = new AirTime("21:00", "2015-04-03", "America/New_York");
+		System.out.println("Original time: "+airtime.getZonedDateAsString() + " at " + airtime.getZonedTimeAsString());
+		System.out.println("Localized time: "+airtime.getLocalDateAsString() + " at " + airtime.getLocalTimeAsString());
 	}
 	
-	public void doTest(int id){
-		Show currShow;
-		try {
-			currShow = new Show(id);
-			currShow.printShow();
-		} catch (NumberFormatException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
+	
 }

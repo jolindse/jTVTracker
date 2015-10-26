@@ -4,53 +4,60 @@ import java.time.ZonedDateTime;
 
 public class Episode {
 
-	private int number;
-	private String epDate, recap, url;
+	private int number, id;
+	private String epDate, recap, url, timeZone, name;
 	private String[] imgArray;
-	
-	public Episode(int number, String recap, String url, String epDate){
-		this.number = number;
-		this.recap = recap;
-		this.epDate = epDate;
-		this.url = url;
-	}
-	
-	public Episode(int number, String recap, String url, String epDate, String[] imgArray){
+	private AirTime time;
+
+	public Episode(int id, String name, int number, String recap, String url, String[] imgArray, String epDate, String timeZone, String zClock){
+		this.name = name;
+		this.id = id;
 		this.number = number;
 		this.recap = recap;
 		this.epDate = epDate;
 		this.url = url;
 		this.imgArray = imgArray;
+		this.timeZone = timeZone;
+		time = new AirTime(zClock, epDate, timeZone);
 	}
 
 	public int getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
 	public String getRecap() {
 		return recap;
 	}
-
-	public void setRecap(String recap) {
-		this.recap = recap;
+	
+	public String getImgMedium() {
+		return imgArray[0];
 	}
-/*
-	public ZonedDateTime getEpDate() {
+	
+	public String getImgFull() {
+		return imgArray[1];
+	}
+
+	public String getLocalTime(){
+		return time.getLocalTimeAsString();
+	}
+	
+	public String getLocalDate(){
+		return time.getLocalDateAsString();
+	}
+	
+	public String getZonedTime(){
+		return time.getZonedTimeAsString();
+	}
+
+	public String getZonedDate(){
 		return epDate;
 	}
-
-	public void setEpDate(ZonedDateTime epDate) {
-		this.epDate = epDate;
-	}
-*/
-
+	
 	@Override
 	public String toString() {
-		return "Nummer "+ number + "\nSändes: " + epDate + "\nSummering: " + recap + "\nUrl: " + url + "\n";
+		return "Namn: " + name + "\nNummer "+ number + "\nSändes:\n " + time.getZonedDateAsString() + " " + time.getZonedTimeAsString() + " " + timeZone + 
+				"\nLokal tid: " + time.getLocalTimeAsString() + " " + time.getLocalDateAsString() + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id
+				+ "\nBild urler: " + getImgMedium() + " " + getImgFull();
 	}
 	
 }

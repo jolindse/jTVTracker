@@ -18,6 +18,10 @@ public class Season {
 	public int getSeasonNumber() {
 		return seasonNumber;
 	}
+	
+	public Episode getEpisode(int number){
+		return episodeList.get(number-1);
+	}
 
 	public int getNumberOfEpisodes() {
 		return episodeList.size();
@@ -28,6 +32,11 @@ public class Season {
 			numberOfEpisodes++;
 			episodeList.add(currEp);
 		}
+	}
+	
+	public String getDuration(){
+		// Calculate duration of season.
+		return "";
 	}
 
 	public void setNumberOfEpisodes() {

@@ -65,6 +65,10 @@ public class GetShow {
 	public String getSummary() {
 		return rootObject.get("summary").getAsString();
 	}
+	
+	public String getPremiereDate(){
+		return rootObject.get("premiered").getAsString();
+	}
 
 	public String getPreEpUrl() {
 		JsonObject links = rootObject.getAsJsonObject("_links");

@@ -4,12 +4,14 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class AirTime {
 
-	private ZonedDateTime origDateTime;
-	private LocalDateTime localDateTime;
-	private Instant absoluteTime;
+	private ZonedDateTime origDateTime, localDateTime;
+	
+	//private Instant absoluteTime;
 
 	public AirTime() {
 
@@ -17,6 +19,7 @@ public class AirTime {
 
 	public AirTime(String origTime, String origDate, String timeZone) {
 		// Parse input strings.
+		System.out.println(origTime + " " + origDate + " " + timeZone); // TESTA
 		String[] dateArrayString = origDate.split("-");
 		String[] timeArrayString = origTime.split(":");
 		int[] dateArray = new int[3];
@@ -28,14 +31,19 @@ public class AirTime {
 			timeArray[i] = Integer.parseInt(timeArrayString[i]);
 		}
 		// Create instant from the date/time with timezone
+		TimeZone localTimeZone = Calendar.getInstance().getTimeZone(); 
 		ZoneId origZone = ZoneId.of(timeZone);
 		origDateTime = ZonedDateTime.of(dateArray[0], dateArray[1], dateArray[2], timeArray[0], timeArray[1], 0, 0,
 				origZone);
-		absoluteTime = origDateTime.toInstant();
+		// Create instant for use with system timezone
+		Instant absoluteTime = origDateTime.toInstant();
+		// Make local time
+		ZoneId localZone = ZoneId.of(localTimeZone.getDisplayName(false, TimeZone.SHORT));
+		localDateTime = ZonedDateTime.ofInstant(absoluteTime, localZone);
+		
 	}
 
-	public LocalDateTime getLocalTime() {
-		LocalDateTime localDateTime = LocalDateTime.from(absoluteTime);
+	public ZonedDateTime getLocalTime() {
 		return localDateTime;
 	}
 	
@@ -45,19 +53,17 @@ public class AirTime {
 	}
 	
 	public String getLocalTimeAsString() {
-		LocalDateTime localTime = getLocalTime();
-		int hour = localTime.getHour();
-		int minute = localTime.getMinute();
-		return hour+":"+minute;
+		int hour = localDateTime.getHour();
+		int minute = localDateTime.getMinute();
+		return String.format("%02d:%02d",hour,minute);
 	}
 
 	public String getLocalDateAsString() {
 		// Convert zoned date to local date and return as string
-		LocalDateTime localTime = getLocalTime();
-		int year = localTime.getYear();
-		int month = localTime.getMonthValue();
-		int day = localTime.getDayOfMonth();
-		return year+"-"+month+"-"+day;
+		int year = localDateTime.getYear();
+		int month = localDateTime.getMonthValue();
+		int day = localDateTime.getDayOfMonth();
+		return String.format("%04d-%02d-%02d",year,month,day);
 	}
 
 	public String getZonedTimeAsString() {

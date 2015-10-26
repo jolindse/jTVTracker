@@ -17,7 +17,6 @@ import com.google.gson.JsonParser;
  *  Parses json response from tvmaze.
  */
 
-
 public class GetEpisode {
 
 	private String sURL;
@@ -38,31 +37,31 @@ public class GetEpisode {
 		rootObject = root.getAsJsonObject(); // May be an array, may be
 	}
 
-	public String getName(){
+	public String getName() {
 		return rootObject.get("name").getAsString();
 	}
-	
-	public int getSeason(){
+
+	public int getSeason() {
 		return rootObject.get("season").getAsInt();
 	}
-	
-	public int getNumber(){
+
+	public int getNumber() {
 		return rootObject.get("number").getAsInt();
 	}
-	
-	public String getAirDate(){
+
+	public String getAirDate() {
 		return rootObject.get("airdate").getAsString();
 	}
-	
-	public String getAirTime(){
+
+	public String getAirTime() {
 		return rootObject.get("airtime").getAsString();
 	}
 
-	public String getAirStamp(){
+	public String getAirStamp() {
 		return rootObject.get("airstamp").getAsString();
 	}
-	
-	public String getSummary(){
+
+	public String getSummary() {
 		return rootObject.get("summary").getAsString();
 	}
 
@@ -70,5 +69,17 @@ public class GetEpisode {
 		return sURL;
 	}
 
+	public String[] getImgUrl() {
+		String[] imageArray = new String[2];
+		if (rootObject.get("image").isJsonNull()){
+			imageArray[01514] = "Ingen bild";
+			imageArray[1] = "Ingen bild";
+		}else{
+		JsonObject image = rootObject.getAsJsonObject("image");
+			imageArray[0] = image.get("medium").getAsString();
+			imageArray[1] = image.get("original").getAsString();
+		}
+		return imageArray;
+	}
 
 }
