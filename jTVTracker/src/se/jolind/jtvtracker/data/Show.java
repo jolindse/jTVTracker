@@ -1,11 +1,18 @@
 package se.jolind.jtvtracker.data;
 
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.jolind.jtvtracker.data.tvmaze.GetEpisode;
-import se.jolind.jtvtracker.data.tvmaze.GetShow;
+import javax.imageio.ImageIO;
+
+import se.jolind.jtvtracker.data.tvmaze.TvmEpisode;
+import se.jolind.jtvtracker.data.tvmaze.TvmShow;
+import se.jolind.jtvtracker.data.AirTime;
 
 /*
  *  Show class. 
@@ -17,19 +24,25 @@ import se.jolind.jtvtracker.data.tvmaze.GetShow;
 
 public class Show {
 
-	private GetShow currShow;
-	private String name, lang, url, genres, timeZone, time, date, network;
-	private String[] imgArray;
+	private TvmShow currShow;
+	private String name, lang, url, genres, timeZone, time, date, network, summary;
+	private String[] imgArray, days;
 	private int id, runtime, numberSeasons, latestEpisode, nextEpisode, updated;
 	private Map<Integer, Season> seasons;
 	private AirTime premTime;
 	private boolean activeShow, seasonsScanned;
 
+	private String NEWLINE = "<BR>";
+	private String BOLD = "<B>";
+	private String ENDBOLD = "</B>";
+	private String ITALIC = "<I>";
+	private String ENDITALIC = "</I>";
+
 	public Show(int id) {
 
 		try {
-			currShow = new GetShow(id);
-			numberSeasons = Integer.parseInt(currShow.getNumberOfSeasons());
+			currShow = new TvmShow(id);
+			numberSeasons = currShow.getNumberOfSeasons();
 		} catch (NumberFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,6 +56,8 @@ public class Show {
 		runtime = currShow.getRuntime();
 		network = currShow.getNetwork();
 		activeShow = currShow.getStatus();
+		days = currShow.getScheduleDays();
+		summary = currShow.getSummary();
 		// Internal values
 		time = currShow.getScheduleTime();
 		date = currShow.getPremiereDate();
@@ -74,18 +89,14 @@ public class Show {
 		return seasonsScanned;
 	}
 
-	// GETTER & SETTERS
-	/*
-	 * public GetShow getCurrShow() { return currShow; }
-	 * 
-	 * public Map<Integer, Season> getSeasons() { return seasons; }
-	 * 
-	 */
-
 	// SHOW INFORMATION
 
 	public String getName() {
 		return name;
+	}
+
+	public String getPremYear() {
+		return premTime.getYear();
 	}
 
 	public String getLang() {
@@ -104,12 +115,30 @@ public class Show {
 		return timeZone;
 	}
 
-	public String getImgMedium() {
-		return imgArray[0];
+	public String getOrigTime() {
+		String day = "";
+		if (days.length > 1) {
+			for (String currDay : days) {
+				day += currDay + " ";
+			}
+		} else {
+			day = days[0] + " ";
+		}
+		day += currShow.getScheduleTime();
+		return day;
 	}
 
-	public String getImgFull() {
-		return imgArray[1];
+	public String getLocalTime() {
+		int latestSeason = getNumberSeasons();
+		int latestEpisode = getNumberOfEps(latestSeason);
+		Episode currEp = getEpisode(latestSeason, latestEpisode);
+		AirTime currTime = currEp.getAirTime();
+		String day = currTime.getLocalDay() + " " + currTime.getLocalTimeAsString();
+		return day;
+	}
+
+	public String getSummary() {
+		return "<HTML>" + summary + "</HTML>";
 	}
 
 	public int getId() {
@@ -127,15 +156,7 @@ public class Show {
 	public int getNumberSeasons() {
 		return numberSeasons;
 	}
-
-	public int getLatestEpisode() {
-		return latestEpisode;
-	}
-
-	public int getNextEpisode() {
-		return nextEpisode;
-	}
-
+	
 	public boolean isActiveShow() {
 		return activeShow;
 	}
@@ -144,38 +165,65 @@ public class Show {
 		return seasonsScanned;
 	}
 	
-	// SHOW SEASON INFORMATION GETTERS
-	
-	public int getNumberOfEps(int seNumber){
-		// Get number of episodes in a season;
-		return 0;
+	public String getEndYear() {
+		int lastSeason = getNumberSeasons();
+		int lastEpisode = getNumberOfEps(lastSeason);
+		Episode lastEp = currentEpisode(lastSeason, lastEpisode);
+		return lastEp.getEndYear();
 	}
-	
-	public String[] getSeasonEpsNames(int seNumber){
-		String[] episodeNames = { " ", " " };
-		// Get all the names of the episodes in a season
-		return episodeNames;
+
+	public Image getMediumImg() {
+		URL imgUrl;
+		Image mediumImg = null;
+		if (getImgMediumUrl().equals("resources/noImage.png")) {
+			try {
+				mediumImg = ImageIO.read(new File(getImgMediumUrl()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				imgUrl = new URL(getImgMediumUrl());
+				mediumImg = ImageIO.read(imgUrl);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return mediumImg;
+	}
+
+	// SHOW SEASON INFORMATION GETTERS
+
+	public int getNumberOfEps(int seNumber) {
+		Season currSeason = seasons.get(seNumber);
+		return currSeason.getNumberOfEpisodes();
+	}
+
+	public String getBasicInfo() {
+		String lblReturn = "<HTML>" + BOLD + ITALIC + getGenres() + ENDBOLD + ENDITALIC + NEWLINE + NEWLINE + "Network:"
+				+ NEWLINE + BOLD + getNetwork() + ENDBOLD + NEWLINE + NEWLINE + "Language: " + NEWLINE + BOLD
+				+ getLang() + ENDBOLD + NEWLINE + "Status:" + NEWLINE + BOLD + getStatus() + ENDBOLD + NEWLINE
+				+ "Air times:" + NEWLINE + BOLD + getOrigTime() + ENDBOLD + " (" + getTimeZone() + ")" + NEWLINE + BOLD
+				+ getLocalTime() + ENDBOLD + " (Local time)" + NEWLINE + NEWLINE + "Runtime:" + NEWLINE + BOLD
+				+ getRuntime() + " minutes" + ENDBOLD + NEWLINE + "</HTML>";
+		return lblReturn;
 	}
 
 	// SHOW EPISODE INFORMATION GETTERS
-	
-	public Episode getEpisode(int seNumber, int epNumber){
+
+	public Episode getEpisode(int seNumber, int epNumber) {
 		return currentEpisode(seNumber, epNumber);
 	}
-	
+
 	public String getEpisodeName(int seNumber, int epNumber) {
-		// Get name of episode, takes season and episode number
-		return "";
-	}
-
-	public String getEpisodeUrl(int seNumber, int epNumber) {
-		// Get episode URL, takes season and episode number
-		return "";
-	}
-
-	public String getEpisodeImg(int seNumber, int epNumber) {
-		// Get episode Img url.
-		return "";
+		Season chSeason = seasons.get(seNumber);
+		Episode chEp = chSeason.getEpisode(epNumber);
+		return chEp.getName();
 	}
 
 	public String printEpisode(int seasonNumber, int currEpisode) {
@@ -184,21 +232,28 @@ public class Show {
 	}
 
 	// INTERNAL METHODS
-	
-	private Episode currentEpisode(int seNumber, int epNumber){
+
+	private String getImgMediumUrl() {
+		return imgArray[0];
+	}
+
+	private String getImgFullUrl() {
+		return imgArray[1];
+	}
+
+	private Episode currentEpisode(int seNumber, int epNumber) {
 		Season choosenSeason = seasons.get(seNumber);
 		Episode choosenEpisode = choosenSeason.getEpisode(epNumber);
 		return choosenEpisode;
 	}
-	
+
 	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
 
 		Map<Integer, Season> seasonMap = new HashMap<>();
 		Season currSeason = new Season();
 		int currSeasonNumber = 1;
-
 		for (int currId : allEps) {
-			GetEpisode currEp = new GetEpisode(currId);
+			TvmEpisode currEp = new TvmEpisode(currId);
 			int episodeSeason = currEp.getSeason();
 			if (episodeSeason == currSeasonNumber) {
 				currSeason.addEpisode(makeEpisode(currId, currEp));
@@ -207,18 +262,30 @@ public class Show {
 				currSeason.setNumberOfEpisodes();
 				seasonMap.put(currSeasonNumber, currSeason);
 				currSeasonNumber = currEp.getSeason();
-				currSeason = new Season();	
+				currSeason = new Season();
 				currSeason.addEpisode(makeEpisode(currId, currEp));
 				currSeason.setSeasonNumber(currSeasonNumber);
 			}
 		}
+		seasonMap.put(currSeasonNumber, currSeason);
+		numberSeasons = currSeasonNumber;
 		return seasonMap;
 	}
-	
-	private Episode makeEpisode(int epId, GetEpisode currEp){
-		Episode ep = new Episode(epId, currEp.getName(), currEp.getNumber(), currEp.getSummary(), currEp.getsURL(), currEp.getImgUrl(),
-				currEp.getAirDate(), timeZone, time);
+
+	private Episode makeEpisode(int epId, TvmEpisode currEp) {
+		Episode ep = new Episode(epId, currEp.getName(), currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
+				currEp.getImgUrl(), currEp.getAirDate(), timeZone, time);
 		return ep;
 
+	}
+
+	private String getStatus() {
+		String statusStr = "";
+		if (activeShow) {
+			statusStr = "Running";
+		} else {
+			statusStr = "Canceled";
+		}
+		return statusStr;
 	}
 }

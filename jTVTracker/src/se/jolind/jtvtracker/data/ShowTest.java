@@ -3,11 +3,11 @@ package se.jolind.jtvtracker.data;
 import java.io.IOException;
 import java.util.Scanner;
 
-import se.jolind.jtvtracker.data.tvmaze.GetShow;
+import se.jolind.jtvtracker.data.tvmaze.TvmShow;
 
 
 public class ShowTest {
-	static GetShow got;
+	static TvmShow got;
 	public ShowTest() throws IOException{
 	}
 
@@ -27,7 +27,7 @@ public class ShowTest {
 		System.out.println("Färdig scannat!");
 		
 		while (keepMenu){
-			System.out.println(currShow.getName() + " antal säsonger: "+currShow.getNumberSeasons()+" antal episoder: "+currShow.getLatestEpisode()+"\n\n");
+			System.out.println(currShow.getName() + " antal säsonger: "+currShow.getNumberSeasons()+" antal episoder: ");
 			System.out.println("Välj:\n"
 					+"1. Visa episod\n"
 					+"2. Skriv ut alla episoder\n"

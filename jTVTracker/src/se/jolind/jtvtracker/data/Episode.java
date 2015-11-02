@@ -1,6 +1,13 @@
 package se.jolind.jtvtracker.data;
 
-import java.time.ZonedDateTime;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Instant;
+
+import javax.imageio.ImageIO;
 
 public class Episode {
 
@@ -9,7 +16,14 @@ public class Episode {
 	private String[] imgArray;
 	private AirTime time;
 
-	public Episode(int id, String name, int number, String recap, String url, String[] imgArray, String epDate, String timeZone, String zClock){
+	private String NEWLINE = "<BR>";
+	private String BOLD = "<B>";
+	private String ENDBOLD = "</B>";
+	private String ITALIC = "<I>";
+	private String ENDITALIC = "</I>";
+
+	public Episode(int id, String name, int number, String recap, String url, String[] imgArray, String epDate,
+			String timeZone, String zClock) {
 		this.name = name;
 		this.id = id;
 		this.number = number;
@@ -25,39 +39,84 @@ public class Episode {
 		return number;
 	}
 
-	public String getRecap() {
-		return recap;
+	public String getName() {
+		return name;
 	}
-	
-	public String getImgMedium() {
+
+	public String getRecap() {
+		return "<HTML>" + recap + "</HTML>";
+	}
+
+	public String getImgMediumUrl() {
 		return imgArray[0];
 	}
-	
-	public String getImgFull() {
+
+	public String getImgFullUrl() {
 		return imgArray[1];
 	}
 
-	public String getLocalTime(){
+	public String getEndYear() {
+		return time.getYear();
+	}
+
+	public String getLocalTime() {
 		return time.getLocalTimeAsString();
 	}
-	
-	public String getLocalDate(){
+
+	public String getLocalDate() {
 		return time.getLocalDateAsString();
 	}
-	
-	public String getZonedTime(){
+
+	public String getZonedTime() {
 		return time.getZonedTimeAsString();
 	}
 
-	public String getZonedDate(){
+	public String getZonedDate() {
 		return epDate;
 	}
 	
-	@Override
-	public String toString() {
-		return "Namn: " + name + "\nNummer "+ number + "\nSändes:\n " + time.getZonedDateAsString() + " " + time.getZonedTimeAsString() + " " + timeZone + 
-				"\nLokal tid: " + time.getLocalTimeAsString() + " " + time.getLocalDateAsString() + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id
-				+ "\nBild urler: " + getImgMedium() + " " + getImgFull();
+	public AirTime getAirTime() {
+		return time;
 	}
 	
+	public Image getMediumImg() {
+		URL imgUrl;
+		Image mediumImg = null;
+		if (getImgMediumUrl().equals("resources/noImage.png")) {
+			try {
+				mediumImg = ImageIO.read(new File(getImgMediumUrl()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				imgUrl = new URL(getImgMediumUrl());
+				mediumImg = ImageIO.read(imgUrl);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return mediumImg;
+	}
+
+	public String getBasicInfo() {
+		String lblReturn = "<HTML>" + BOLD + getName() + ENDBOLD + NEWLINE + NEWLINE + "Aired: " + NEWLINE + BOLD
+				+ epDate + " " + getZonedTime() + " " + timeZone + ENDBOLD + NEWLINE + BOLD + getLocalDate() + " "
+				+ getLocalTime() + " (Local time)" + ENDBOLD + NEWLINE + "</HTML>";
+		return lblReturn;
+	}
+
+	@Override
+	public String toString() {
+		return "Namn: " + name + "\nNummer " + number + "\nSändes:\n " + time.getZonedDateAsString() + " "
+				+ time.getZonedTimeAsString() + " " + timeZone + "\nLokal tid: " + time.getLocalTimeAsString() + " "
+				+ time.getLocalDateAsString() + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id
+				+ "\nBild urler: " + getImgMediumUrl() + " " + getImgFullUrl();
+	}
+
 }

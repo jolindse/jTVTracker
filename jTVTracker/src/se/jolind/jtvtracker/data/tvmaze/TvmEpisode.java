@@ -17,13 +17,13 @@ import com.google.gson.JsonParser;
  *  Parses json response from tvmaze.
  */
 
-public class GetEpisode {
+public class TvmEpisode {
 
 	private String sURL;
 	private JsonObject rootObject;
 	private String epBaseUrl = "http://api.tvmaze.com/episodes/";
 
-	public GetEpisode(int id) throws IOException {
+	public TvmEpisode(int id) throws IOException {
 		sURL = epBaseUrl + Integer.toString(id);
 
 		// Connect to the URL using java's native library
@@ -72,8 +72,8 @@ public class GetEpisode {
 	public String[] getImgUrl() {
 		String[] imageArray = new String[2];
 		if (rootObject.get("image").isJsonNull()){
-			imageArray[01514] = "Ingen bild";
-			imageArray[1] = "Ingen bild";
+			imageArray[0] = "resources/noImage.png";
+			imageArray[1] = "resources/noImage.png";
 		}else{
 		JsonObject image = rootObject.getAsJsonObject("image");
 			imageArray[0] = image.get("medium").getAsString();

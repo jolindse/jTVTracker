@@ -1,20 +1,20 @@
 package se.jolind.jtvtracker.data.tvmaze;
 
+import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /*
  * 
@@ -24,13 +24,14 @@ import com.google.gson.JsonSyntaxException;
  * 
  */
 
-public class GetShow {
+public class TvmShow {
 
 	private String showBaseUrl = "http://api.tvmaze.com/shows/";
 	private JsonObject rootObject;
 	private Gson converter;
+	private boolean isWebSeries = false;
 
-	public GetShow(int id) throws IOException {
+	public TvmShow(int id) throws IOException {
 		String sURL = showBaseUrl + Integer.toString(id);
 		URL url = new URL(sURL);
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -38,6 +39,10 @@ public class GetShow {
 		JsonParser jp = new JsonParser();
 		JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
 		rootObject = root.getAsJsonObject();
+		// Check if its a web series
+		if (rootObject.get("network").isJsonNull()) {
+			isWebSeries = true;
+		}
 	}
 
 	// INFORMATION EXTRACTION METHODS
@@ -65,8 +70,8 @@ public class GetShow {
 	public String getSummary() {
 		return rootObject.get("summary").getAsString();
 	}
-	
-	public String getPremiereDate(){
+
+	public String getPremiereDate() {
 		return rootObject.get("premiered").getAsString();
 	}
 
@@ -91,8 +96,17 @@ public class GetShow {
 		String strReturn = "";
 		JsonArray jsGenre = rootObject.getAsJsonArray("genres");
 		String[] genreList = convJsonArray(jsGenre);
-		for (String currGen : genreList) {
-			strReturn += currGen + ", ";
+		if (genreList.length > 1) {
+			for (String currGen : genreList) {
+				strReturn += currGen + ", ";
+			}
+			strReturn = strReturn.substring(0, strReturn.length() - 2);
+		}
+		if (genreList.length == 1) {
+			strReturn = genreList[0];
+		}
+		if (genreList.length == 0) {
+			strReturn = "None";
 		}
 		return strReturn;
 	}
@@ -121,23 +135,41 @@ public class GetShow {
 	}
 
 	public String getTimeZone() {
-		JsonObject network = rootObject.getAsJsonObject("network");
-		JsonObject localInfo = network.getAsJsonObject("country");
-		String timeZone = localInfo.get("timezone").getAsString();
+		String timeZone = "";
+		if (isWebSeries) {
+			JsonObject network = rootObject.getAsJsonObject("webChannel");
+			JsonObject localInfo = network.getAsJsonObject("country");
+			timeZone = localInfo.get("timezone").getAsString();
+		} else {
+			JsonObject network = rootObject.getAsJsonObject("network");
+			JsonObject localInfo = network.getAsJsonObject("country");
+			timeZone = localInfo.get("timezone").getAsString();
+		}
 		return timeZone;
 	}
 
 	public String getNetwork() {
-		JsonObject network = rootObject.getAsJsonObject("network");
-		String networkName = network.get("name").getAsString();
+		String networkName = "";
+		if (isWebSeries) {
+			JsonObject webChannel = rootObject.getAsJsonObject("webChannel");
+			networkName = webChannel.get("name").getAsString();
+		} else {
+			JsonObject network = rootObject.getAsJsonObject("network");
+			networkName = network.get("name").getAsString();
+		}
 		return networkName;
 	}
 
 	public String[] getImageUrl() {
 		String[] imageArray = new String[2];
-		JsonObject image = rootObject.getAsJsonObject("image");
-		imageArray[0] = image.get("medium").getAsString();
-		imageArray[1] = image.get("original").getAsString();
+		if (rootObject.get("image").isJsonNull()) {
+			imageArray[0] = "resources/noImage.png";
+			imageArray[1] = "resources/noImage.png";
+		} else {
+			JsonObject image = rootObject.getAsJsonObject("image");
+			imageArray[0] = image.get("medium").getAsString();
+			imageArray[1] = image.get("original").getAsString();
+		}
 		return imageArray;
 	}
 
@@ -175,9 +207,18 @@ public class GetShow {
 
 	}
 
-	public String getNumberOfSeasons() throws NumberFormatException, IOException {
-		GetEpisode latestEp = new GetEpisode(Integer.parseInt(getEpisodeId(getPreEpUrl())));
-		return Integer.toString(latestEp.getSeason());
+	public int getNumberOfSeasons() {
+		TvmEpisode latestEp;
+		int number = -1;
+		try {
+			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(getPreEpUrl())));
+			number = latestEp.getSeason();
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Fel vid läsning i GetShow");
+			e.printStackTrace();
+		}
+		return number;
 	}
 
 	// INTERNAL METHODS

@@ -1,26 +1,26 @@
 package se.jolind.jtvtracker.data;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Season {
 
 	private int seasonNumber, numberOfEpisodes;
-	private List<Episode> episodeList;
+	private Map<Integer, Episode> episodeList;
 
 	public Season() {
 		seasonNumber = 0;
 		numberOfEpisodes = 0;
-		episodeList = new ArrayList<>();
+		episodeList = new HashMap<>();
 	}
 
 	public int getSeasonNumber() {
 		return seasonNumber;
 	}
-	
-	public Episode getEpisode(int number){
-		return episodeList.get(number-1);
+
+	public Episode getEpisode(int number) {
+		return episodeList.get(number);
 	}
 
 	public int getNumberOfEpisodes() {
@@ -28,13 +28,10 @@ public class Season {
 	}
 
 	public void addEpisode(Episode currEp) {
-		if (!episodeList.contains(currEp)) {
-			numberOfEpisodes++;
-			episodeList.add(currEp);
-		}
+		episodeList.put(currEp.getNumber(), currEp);
 	}
-	
-	public String getDuration(){
+
+	public String getDuration() {
 		// Calculate duration of season.
 		return "";
 	}
@@ -42,23 +39,19 @@ public class Season {
 	public void setNumberOfEpisodes() {
 		numberOfEpisodes = episodeList.size();
 	}
-	
-	public void setSeasonNumber(int number){
+
+	public void setSeasonNumber(int number) {
 		seasonNumber = number;
 	}
-	
-	public void printSeasonEps(){
+
+	public void printSeasonEps() {
 		System.out.println(episodeList);
-		for (Episode currEp: episodeList){
-			System.out.println(currEp);
+		for (int i = 1; i <= numberOfEpisodes; i++) {
+			System.out.println(episodeList.get(i));
 		}
 	}
-	/*
-	 * public void setSeasonStartDate(LocalDate seasonStartDate) {
-	 * this.seasonStartDate = seasonStartDate; }
-	 */
 
-	public List<Episode> getEpisodeList() {
+	public Map<Integer, Episode> getEpisodeList() {
 		return episodeList;
 	}
 
