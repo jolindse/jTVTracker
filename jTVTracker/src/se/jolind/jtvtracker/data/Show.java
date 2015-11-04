@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import se.jolind.jtvtracker.data.tvmaze.TvmEpisode;
 import se.jolind.jtvtracker.data.tvmaze.TvmShow;
@@ -25,12 +26,14 @@ import se.jolind.jtvtracker.data.AirTime;
 public class Show {
 
 	private TvmShow currShow;
-	private String name, lang, url, genres, timeZone, time, date, network, summary;
-	private String[] imgArray, days;
-	private int id, runtime, numberSeasons, latestEpisode, nextEpisode, updated;
+	private String name, lang, url, genres, network, summary, runtime;
+	private String time, date, timeZone;
+	private String[] days, imgArray;
+	private int id, numberSeasons, latestEpisode, nextEpisode, updated;
 	private Map<Integer, Season> seasons;
 	private AirTime premTime;
-	private boolean activeShow, seasonsScanned;
+	private ImageIcon showImg;
+	private boolean activeShow, hasSeasons, hasTime; // seasonsScanned,
 
 	private String NEWLINE = "<BR>";
 	private String BOLD = "<B>";
@@ -40,55 +43,69 @@ public class Show {
 
 	public Show(int id) {
 
-		try {
-			currShow = new TvmShow(id);
-			numberSeasons = currShow.getNumberOfSeasons();
-		} catch (NumberFormatException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		currShow = new TvmShow(id);
+
+		// Set boolean checks
+		hasSeasons = checkSeasons();
+		hasTime = currShow.getTimeInfo();
+		
+		// Internal values
+		time = currShow.getScheduleTime();
+		date = currShow.getPremiereDate();
+		timeZone = currShow.getTimeZone();
+		
+		
+		
+		if (hasTime){
+		System.out.println("Creating AirTime (Show) : time: "+time+" date: "+date+" timezone: "+timeZone); // TEST
+		premTime = new AirTime(time, date, timeZone);
 		}
+		
+		imgArray = currShow.getImageUrl();
+		
+		
 		// External values
+		id = currShow.getId();
 		name = currShow.getName();
 		lang = currShow.getLang();
 		genres = currShow.getGenres();
-		imgArray = currShow.getImageUrl();
-		id = currShow.getId();
+		updated = currShow.getUpdated();
 		runtime = currShow.getRuntime();
 		network = currShow.getNetwork();
 		activeShow = currShow.getStatus();
 		days = currShow.getScheduleDays();
 		summary = currShow.getSummary();
-		// Internal values
-		time = currShow.getScheduleTime();
-		date = currShow.getPremiereDate();
-		timeZone = currShow.getTimeZone();
-		premTime = new AirTime(time, date, timeZone);
-		updated = currShow.getUpdatedTime();
-		seasonsScanned = false;
-	}
+		showImg = createIcon();
+		
 
-	public void printShow() {
-		if (seasonsScanned) {
-			for (int i = 1; i < numberSeasons; i++) {
-				Season currSeason = seasons.get(i);
-				currSeason.printSeasonEps();
-			}
-		} else {
-			System.out.println("Säsongerna är inte scannade.");
-		}
+		scanSeasons();
+		
 	}
-
-	public boolean scanSeasons() {
+	
+	/*
+	private void scanSeasons() {
 		try {
 			seasons = makeSeasons(currShow.getAllEpId());
-			seasonsScanned = true;
+			// seasonsScanned = true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return seasonsScanned;
+		// return seasonsScanned;
+	}
+	*/
+	
+	// STATUS BOOLEANS
+
+	public boolean isSeasons(){
+		return hasSeasons;
 	}
 
+	public boolean isActiveShow() {
+		return activeShow;
+	}
+	
 	// SHOW INFORMATION
 
 	public String getName() {
@@ -96,8 +113,10 @@ public class Show {
 	}
 
 	public String getPremYear() {
+		if (hasTime){
 		return premTime.getYear();
-	}
+		}
+		return date.substring(0,4);	}
 
 	public String getLang() {
 		return lang;
@@ -111,11 +130,42 @@ public class Show {
 		return genres;
 	}
 
-	public String getTimeZone() {
-		return timeZone;
+	public String getSummary() {
+		return "<HTML>" + summary + "</HTML>";
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public String getRuntime() {
+		return runtime;
+	}
+
+	public String getNetwork() {
+		return network;
+	}
+
+	public int getNumberSeasons() {
+		return numberSeasons;
+	}
+	
+	public ImageIcon getMediumImg() {
+		return showImg;
+	}
+
+	// TIME GETTERS
+	
+	public String getTimeZone() {
+		if(hasTime){
+		return timeZone;
+		}
+		return "No information";
+	}
+
+
 	public String getOrigTime() {
+		if (hasTime){
 		String day = "";
 		if (days.length > 1) {
 			for (String currDay : days) {
@@ -126,53 +176,33 @@ public class Show {
 		}
 		day += currShow.getScheduleTime();
 		return day;
+		}
+		return "No information";
 	}
 
 	public String getLocalTime() {
+		if (hasTime && hasSeasons){
 		int latestSeason = getNumberSeasons();
 		int latestEpisode = getNumberOfEps(latestSeason);
 		Episode currEp = getEpisode(latestSeason, latestEpisode);
 		AirTime currTime = currEp.getAirTime();
 		String day = currTime.getLocalDay() + " " + currTime.getLocalTimeAsString();
 		return day;
-	}
-
-	public String getSummary() {
-		return "<HTML>" + summary + "</HTML>";
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public int getRuntime() {
-		return runtime;
-	}
-
-	public String getNetwork() {
-		return network;
-	}
-	
-	public int getNumberSeasons() {
-		return numberSeasons;
-	}
-	
-	public boolean isActiveShow() {
-		return activeShow;
-	}
-
-	public boolean isSeasonsScanned() {
-		return seasonsScanned;
+		}
+		return "No information";
 	}
 	
 	public String getEndYear() {
+		if (hasSeasons){
 		int lastSeason = getNumberSeasons();
 		int lastEpisode = getNumberOfEps(lastSeason);
 		Episode lastEp = currentEpisode(lastSeason, lastEpisode);
 		return lastEp.getEndYear();
+		}
+		return "No information";
 	}
 
-	public Image getMediumImg() {
+	private ImageIcon createIcon() {
 		URL imgUrl;
 		Image mediumImg = null;
 		if (getImgMediumUrl().equals("resources/noImage.png")) {
@@ -194,11 +224,21 @@ public class Show {
 				e.printStackTrace();
 			}
 		}
-		return mediumImg;
+		ImageIcon icon = new ImageIcon(mediumImg);
+		return icon;
+	}
+
+	// PRINT METHOD FOR TESTING
+	
+	public void printShow() {
+		for (int i = 1; i < numberSeasons; i++) {
+			Season currSeason = seasons.get(i);
+			currSeason.printSeasonEps();
+		}
 	}
 
 	// SHOW SEASON INFORMATION GETTERS
-
+	
 	public int getNumberOfEps(int seNumber) {
 		Season currSeason = seasons.get(seNumber);
 		return currSeason.getNumberOfEpisodes();
@@ -247,8 +287,15 @@ public class Show {
 		return choosenEpisode;
 	}
 
-	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
+	private boolean checkSeasons() {
+		boolean seasonsNotNull = false;
+		if (currShow.getNumberOfSeasons() > 0) {
+			seasonsNotNull = true;
+		}
+		return seasonsNotNull;
+	}
 
+	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
 		Map<Integer, Season> seasonMap = new HashMap<>();
 		Season currSeason = new Season();
 		int currSeasonNumber = 1;
@@ -274,9 +321,20 @@ public class Show {
 
 	private Episode makeEpisode(int epId, TvmEpisode currEp) {
 		Episode ep = new Episode(epId, currEp.getName(), currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
-				currEp.getImgUrl(), currEp.getAirDate(), timeZone, time);
+				currEp.getImgUrl(), currEp.getAirDate(), timeZone, time, hasTime);
 		return ep;
 
+	}
+	
+	private void scanSeasons() {
+		try {
+			seasons = makeSeasons(currShow.getAllEpId());
+			// seasonsScanned = true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// return seasonsScanned;
 	}
 
 	private String getStatus() {

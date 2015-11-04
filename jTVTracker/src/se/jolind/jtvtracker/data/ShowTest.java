@@ -23,7 +23,7 @@ public class ShowTest {
 		
 		Show currShow = new Show(showId);
 		System.out.println("Scannar showen!");
-		currShow.scanSeasons();
+		//currShow.scanSeasons();
 		System.out.println("Färdig scannat!");
 		
 		while (keepMenu){

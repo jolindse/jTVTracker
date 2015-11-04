@@ -14,6 +14,7 @@ public class Episode {
 	private int number, id;
 	private String epDate, recap, url, timeZone, name;
 	private String[] imgArray;
+	private boolean timeInfo;
 	private AirTime time;
 
 	private String NEWLINE = "<BR>";
@@ -23,7 +24,7 @@ public class Episode {
 	private String ENDITALIC = "</I>";
 
 	public Episode(int id, String name, int number, String recap, String url, String[] imgArray, String epDate,
-			String timeZone, String zClock) {
+			String timeZone, String zClock, boolean makeAirTime) {
 		this.name = name;
 		this.id = id;
 		this.number = number;
@@ -32,7 +33,10 @@ public class Episode {
 		this.url = url;
 		this.imgArray = imgArray;
 		this.timeZone = timeZone;
-		time = new AirTime(zClock, epDate, timeZone);
+		timeInfo = makeAirTime;
+		if (timeInfo) {
+			time = new AirTime(zClock, epDate, timeZone);
+		}
 	}
 
 	public int getNumber() {
@@ -56,29 +60,41 @@ public class Episode {
 	}
 
 	public String getEndYear() {
-		return time.getYear();
+		if (timeInfo) {
+			return time.getYear();
+		}
+		return epDate.substring(0, 4);
 	}
 
 	public String getLocalTime() {
-		return time.getLocalTimeAsString();
+		if (timeInfo) {
+			return time.getLocalTimeAsString();
+		}
+		return "No information";
 	}
 
 	public String getLocalDate() {
-		return time.getLocalDateAsString();
+		if (timeInfo) {
+			return time.getLocalDateAsString();
+		}
+		return "No information";
 	}
 
 	public String getZonedTime() {
-		return time.getZonedTimeAsString();
+		if (timeInfo) {
+			return time.getZonedTimeAsString();
+		}
+		return "No information";
 	}
 
 	public String getZonedDate() {
 		return epDate;
 	}
-	
+
 	public AirTime getAirTime() {
 		return time;
 	}
-	
+
 	public Image getMediumImg() {
 		URL imgUrl;
 		Image mediumImg = null;

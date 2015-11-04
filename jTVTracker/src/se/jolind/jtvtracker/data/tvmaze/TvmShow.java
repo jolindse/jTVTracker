@@ -29,20 +29,32 @@ public class TvmShow {
 	private String showBaseUrl = "http://api.tvmaze.com/shows/";
 	private JsonObject rootObject;
 	private Gson converter;
+	private boolean timeInfoOk;
 	private boolean isWebSeries = false;
 
-	public TvmShow(int id) throws IOException {
+	public TvmShow(int id) {
 		String sURL = showBaseUrl + Integer.toString(id);
-		URL url = new URL(sURL);
-		HttpURLConnection request = (HttpURLConnection) url.openConnection();
-		request.connect();
-		JsonParser jp = new JsonParser();
-		JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
-		rootObject = root.getAsJsonObject();
+		URL url;
+		HttpURLConnection request;
+		JsonElement root;
+		try {
+			url = new URL(sURL);
+			request = (HttpURLConnection) url.openConnection();
+			request.connect();
+			JsonParser jp = new JsonParser();
+			root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+			rootObject = root.getAsJsonObject();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		// Check if its a web series
 		if (rootObject.get("network").isJsonNull()) {
 			isWebSeries = true;
 		}
+		// Check time info
+		timeInfoOk = checkTimeInfo();
 	}
 
 	// INFORMATION EXTRACTION METHODS
@@ -51,34 +63,48 @@ public class TvmShow {
 		return rootObject.get("id").getAsInt();
 	}
 
-	public int getRuntime() {
-		return rootObject.get("runtime").getAsInt();
+	public String getRuntime() {
+		// return rootObject.get("runtime").getAsString();
+		return checkNull(rootObject, "runtime");
 	}
 
 	public String getName() {
-		return rootObject.get("name").getAsString();
+		return checkNull(rootObject, "name");
+		// return rootObject.get("name").getAsString();
 	}
 
 	public String getType() {
-		return rootObject.get("type").getAsString();
+		return checkNull(rootObject, "type");
+		// return rootObject.get("type").getAsString();
 	}
 
 	public String getLang() {
-		return rootObject.get("language").getAsString();
+		return checkNull(rootObject, "language");
+		// return rootObject.get("language").getAsString();
 	}
 
 	public String getSummary() {
-		return rootObject.get("summary").getAsString();
+		return checkNull(rootObject, "summary");
+		// return rootObject.get("summary").getAsString();
 	}
 
-	public String getPremiereDate() {
-		return rootObject.get("premiered").getAsString();
+	public String getStatusString() {
+		return checkNull(rootObject, "status");
 	}
-
+	
+	public boolean getTimeInfo() {
+		return timeInfoOk;
+	}
+	
 	public String getPreEpUrl() {
+		String strReturn = "No information.";
 		JsonObject links = rootObject.getAsJsonObject("_links");
-		JsonObject previous = links.getAsJsonObject("previousepisode");
-		return previous.get("href").getAsString();
+		try {
+			JsonObject previous = links.getAsJsonObject("previousepisode");
+			strReturn = previous.get("href").getAsString();
+		} catch (NullPointerException e) {
+		}
+		return strReturn;
 	}
 
 	public String getNextEpUrl() {
@@ -120,34 +146,6 @@ public class TvmShow {
 		return runningShow;
 	}
 
-	public String[] getScheduleDays() {
-		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
-		JsonArray jsDays = jsSchedule.getAsJsonArray("days");
-		String[] days = convJsonArray(jsDays);
-		return days;
-	}
-
-	public String getScheduleTime() {
-		String airTime = "";
-		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
-		airTime = jsSchedule.get("time").getAsString();
-		return airTime;
-	}
-
-	public String getTimeZone() {
-		String timeZone = "";
-		if (isWebSeries) {
-			JsonObject network = rootObject.getAsJsonObject("webChannel");
-			JsonObject localInfo = network.getAsJsonObject("country");
-			timeZone = localInfo.get("timezone").getAsString();
-		} else {
-			JsonObject network = rootObject.getAsJsonObject("network");
-			JsonObject localInfo = network.getAsJsonObject("country");
-			timeZone = localInfo.get("timezone").getAsString();
-		}
-		return timeZone;
-	}
-
 	public String getNetwork() {
 		String networkName = "";
 		if (isWebSeries) {
@@ -173,7 +171,7 @@ public class TvmShow {
 		return imageArray;
 	}
 
-	public int getUpdatedTime() {
+	public int getUpdated() {
 		int updateTime = rootObject.get("updated").getAsInt();
 		return updateTime;
 	}
@@ -195,37 +193,101 @@ public class TvmShow {
 		JsonParser parser = new JsonParser();
 		JsonArray epRoot = parser.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonArray();
 
-		int[] episodeArray = new int[epRoot.size()];
+		if (!epRoot.isJsonNull()) {
 
-		for (int i = 0; i < epRoot.size(); i++) {
-			JsonObject currEp = epRoot.get(i).getAsJsonObject();
-			JsonObject links = currEp.getAsJsonObject("_links");
-			JsonObject currUrl = links.getAsJsonObject("self");
-			episodeArray[i] = Integer.parseInt(getEpisodeId((currUrl.get("href").getAsString())));
+			int[] episodeArray = new int[epRoot.size()];
+
+			for (int i = 0; i < epRoot.size(); i++) {
+				JsonObject currEp = epRoot.get(i).getAsJsonObject();
+				JsonObject links = currEp.getAsJsonObject("_links");
+				JsonObject currUrl = links.getAsJsonObject("self");
+				episodeArray[i] = Integer.parseInt(getEpisodeId((currUrl.get("href").getAsString())));
+			}
+			return episodeArray;
 		}
-		return episodeArray;
-
+		int[] emptyArray = { -1 };
+		return emptyArray;
 	}
 
 	public int getNumberOfSeasons() {
 		TvmEpisode latestEp;
-		int number = -1;
+		int number = 0;
 		try {
 			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(getPreEpUrl())));
 			number = latestEp.getSeason();
 		} catch (NumberFormatException | IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Fel vid läsning i GetShow");
 			e.printStackTrace();
 		}
 		return number;
 	}
 
+	// TIME VALUES
+	
+	private boolean checkTimeInfo(){
+		String noInfo = "No information";
+		if (getPremiereDate().equals(noInfo) || getScheduleTime().equals(noInfo)) {
+			return false;
+		}
+		return true;
+	}
+	
+	public String getPremiereDate() {
+		return checkNull(rootObject, "premiered");
+		// return rootObject.get("premiered").getAsString();
+	}
+	
+	public String[] getScheduleDays() {
+		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
+		JsonArray jsDays = jsSchedule.getAsJsonArray("days");
+		if (jsDays.size() > 0) {
+			String[] days = convJsonArray(jsDays);
+			return days;
+		}
+		String[] emptyArray = { "No information" };
+		return emptyArray;
+	}
+
+	public String getScheduleTime() {
+		
+		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
+		String hour = jsSchedule.get("time").getAsString();
+		if (hour.equals(":") || hour.equals("")){
+			return "No information";
+		}
+		return hour;
+	}
+
+	public String getTimeZone() {
+		String timeZone = "";
+		if (isWebSeries) {
+			JsonObject network = rootObject.getAsJsonObject("webChannel");
+			JsonObject localInfo = network.getAsJsonObject("country");
+			timeZone = localInfo.get("timezone").getAsString();
+		} else {
+			JsonObject network = rootObject.getAsJsonObject("network");
+			JsonObject localInfo = network.getAsJsonObject("country");
+			timeZone = localInfo.get("timezone").getAsString();
+		}
+		return timeZone;
+	}
+	
+	
 	// INTERNAL METHODS
 
-	private String getEpisodeId(String epUrl) {
-		return epUrl.substring(31);
+	private String checkNull(JsonObject currentObject, String key) {
+		String strReturn = "No information";
+		try {
+			strReturn = currentObject.get(key).getAsString();
+		} catch (NullPointerException e) {
+		}
+		return strReturn;
+	}
 
+	private String getEpisodeId(String epUrl) {
+		if (epUrl.length() > 30){
+		return epUrl.substring(31);
+		}
+		return "0";
 	}
 
 	private String[] convJsonArray(JsonArray currJArray) {
