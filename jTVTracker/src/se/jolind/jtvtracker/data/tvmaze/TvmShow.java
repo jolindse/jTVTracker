@@ -65,31 +65,37 @@ public class TvmShow {
 
 	public String getRuntime() {
 		// return rootObject.get("runtime").getAsString();
-		return checkNull(rootObject, "runtime");
+		//return checkNull(rootObject, "runtime");
+		return rootObject.get("runtime").isJsonNull() ? "No information" : rootObject.get("runtime").getAsString();
 	}
 
 	public String getName() {
-		return checkNull(rootObject, "name");
+		//return checkNull(rootObject, "name");
 		// return rootObject.get("name").getAsString();
+		return rootObject.get("name").isJsonNull() ? "No information" : rootObject.get("name").getAsString();
 	}
 
 	public String getType() {
-		return checkNull(rootObject, "type");
+		//return checkNull(rootObject, "type");
 		// return rootObject.get("type").getAsString();
+		return rootObject.get("type").isJsonNull() ? "No information" : rootObject.get("type").getAsString();
 	}
 
 	public String getLang() {
-		return checkNull(rootObject, "language");
+		//return checkNull(rootObject, "language");
 		// return rootObject.get("language").getAsString();
+		return rootObject.get("language").isJsonNull() ? "No information" : rootObject.get("language").getAsString();
 	}
 
 	public String getSummary() {
-		return checkNull(rootObject, "summary");
+		//return checkNull(rootObject, "summary");
 		// return rootObject.get("summary").getAsString();
+		return rootObject.get("summary").isJsonNull() ? "No information" : rootObject.get("summary").getAsString();
 	}
 
 	public String getStatusString() {
-		return checkNull(rootObject, "status");
+		//return checkNull(rootObject, "status");
+		return rootObject.get("status").isJsonNull() ? "No information" : rootObject.get("status").getAsString();
 	}
 	
 	public boolean getTimeInfo() {
@@ -97,7 +103,7 @@ public class TvmShow {
 	}
 	
 	public String getPreEpUrl() {
-		String strReturn = "No information.";
+		String strReturn = "No information";
 		JsonObject links = rootObject.getAsJsonObject("_links");
 		try {
 			JsonObject previous = links.getAsJsonObject("previousepisode");
@@ -213,8 +219,12 @@ public class TvmShow {
 		TvmEpisode latestEp;
 		int number = 0;
 		try {
-			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(getPreEpUrl())));
+			String epUrl = getPreEpUrl();
+			System.out.println("Previous ep url: "+epUrl); // TEST
+			if (!epUrl.equals("No information")){
+			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(epUrl)));
 			number = latestEp.getSeason();
+			}
 		} catch (NumberFormatException | IOException e) {
 			e.printStackTrace();
 		}
@@ -232,7 +242,8 @@ public class TvmShow {
 	}
 	
 	public String getPremiereDate() {
-		return checkNull(rootObject, "premiered");
+		return rootObject.get("premiered").isJsonNull() ? "No information" : rootObject.get("premiered").getAsString();
+		//return checkNull(rootObject, "premiered");
 		// return rootObject.get("premiered").getAsString();
 	}
 	
@@ -275,12 +286,22 @@ public class TvmShow {
 	// INTERNAL METHODS
 
 	private String checkNull(JsonObject currentObject, String key) {
-		String strReturn = "No information";
-		try {
-			strReturn = currentObject.get(key).getAsString();
-		} catch (NullPointerException e) {
+
+		if (currentObject.isJsonNull()){
+			return "No information";
 		}
-		return strReturn;
+		return currentObject.get(key).toString();
+		//return currentObject.get(key).getAsString();
+		/*
+		String result = currentObject.get(key).getAsString();
+		System.out.println("Key: "+key+" Result: "+result); // TEST
+		if (result.equals("") || result.equals("null")) {
+			result = "No information";
+		}
+		return result;
+		
+		return currentObject.isJsonNull() ? "No information" : currentObject.getAsString();
+		 */
 	}
 
 	private String getEpisodeId(String epUrl) {
