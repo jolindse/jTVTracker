@@ -179,7 +179,7 @@ public class MainFrame extends JFrame {
 	public void increaseProgressBar(){
 		bottomPanel.increaseProgress();
 	}
-	
+	/*
 	public void setListener(Controller controller) {
 		this.controller = controller;
 	}
@@ -187,4 +187,5 @@ public class MainFrame extends JFrame {
 	public static Controller getListener() {
 		return controller;
 	}
+	*/
 }

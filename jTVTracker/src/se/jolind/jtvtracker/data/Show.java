@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import se.jolind.jtvtracker.application.Application;
 import se.jolind.jtvtracker.data.tvmaze.TvmEpisode;
 import se.jolind.jtvtracker.data.tvmaze.TvmShow;
 import se.jolind.jtvtracker.gui.MainFrame;
@@ -45,7 +46,7 @@ public class Show {
 
 	public Show(int id) {
 
-		progressListener = MainFrame.getListener();
+		progressListener = Application.getListener();
 
 		currShow = new TvmShow(id);
 

@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import se.jolind.jtvtracker.application.Application;
 import se.jolind.jtvtracker.data.tvmaze.TvmShortShow;
 import se.jolind.jtvtracker.gui.interfaces.ISearchRequest;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
@@ -72,7 +73,7 @@ public class SearchPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (searchListener == null) {
-					searchListener = MainFrame.getListener();
+					searchListener = Application.getListener();
 				}
 
 				String currString = fieldSearch.getText();
@@ -119,7 +120,7 @@ public class SearchPanel extends JPanel {
 		JLabel lblFiller = new JLabel(" ");
 
 		if (showListener == null) {
-			showListener = MainFrame.getListener();
+			showListener = Application.getListener();
 		}
 
 		JLabel[] searchName = new JLabel[searchList.size()];

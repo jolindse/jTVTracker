@@ -19,7 +19,7 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 	public Controller(MainFrame view) {
 
 		this.view = view;
-		view.setListener(this);
+//		view.setListener(this);
 	
 
 	}
