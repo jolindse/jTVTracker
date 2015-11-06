@@ -220,7 +220,6 @@ public class TvmShow {
 		int number = 0;
 		try {
 			String epUrl = getPreEpUrl();
-			System.out.println("Previous ep url: "+epUrl); // TEST
 			if (!epUrl.equals("No information")){
 			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(epUrl)));
 			number = latestEp.getSeason();
@@ -284,7 +283,7 @@ public class TvmShow {
 	
 	
 	// INTERNAL METHODS
-
+	/*
 	private String checkNull(JsonObject currentObject, String key) {
 
 		if (currentObject.isJsonNull()){
@@ -301,9 +300,9 @@ public class TvmShow {
 		return result;
 		
 		return currentObject.isJsonNull() ? "No information" : currentObject.getAsString();
-		 */
+		
 	}
-
+	*/
 	private String getEpisodeId(String epUrl) {
 		if (epUrl.length() > 30){
 		return epUrl.substring(31);

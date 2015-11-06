@@ -87,8 +87,12 @@ public class MainFrame extends JFrame {
 		topPanel = new TopPanel(this);
 		bottomPanel = new BottomPanel();
 		searchPanel = new SearchPanel();
+		showPanel = new ShowPanel();
+		episodePanel = new EpisodePanel();
 
 		contentPane = new JTabbedPane(JTabbedPane.TOP);
+		contentPane.addTab("Series", showPanel);
+		contentPane.addTab("Episode", episodePanel);
 
 		createTabs();
 
@@ -103,19 +107,25 @@ public class MainFrame extends JFrame {
 	// TABS MANAGMENT
 
 	private void createTabs() {
+		contentPane.removeAll();
 		contentPane.addTab("Search", searchPanel);
 		if (currShow != null) {
 			showPanel = new ShowPanel();
 			contentPane.addTab("Series", showPanel);
-			if (currShow.isSeasons())
+			if (currShow.isSeasons()) {
 				episodePanel = new EpisodePanel();
-			contentPane.addTab("Episode", episodePanel);
+				contentPane.addTab("Episode", episodePanel);
+			}
 		}
 	}
 
+	// SHOW AND EPISODE METHODS
+	
 	public void setShow(Show currShow) {
 		this.currShow = currShow;
 		contentPane.removeAll();
+		currSeason = 1;
+		currEp = 1;
 		createTabs();
 		setInfo();
 		contentPane.setSelectedIndex(1);
@@ -162,6 +172,14 @@ public class MainFrame extends JFrame {
 		showPanel.updateInfo();
 	}
 
+	public void initProgressBar(int min, int max){
+		bottomPanel.setProgressValues(min, max);
+	}
+	
+	public void increaseProgressBar(){
+		bottomPanel.increaseProgress();
+	}
+	
 	public void setListener(Controller controller) {
 		this.controller = controller;
 	}

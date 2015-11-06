@@ -8,7 +8,9 @@ import se.jolind.jtvtracker.data.ShowTest;
 import se.jolind.jtvtracker.gui.MainFrame;
 
 public class Application {
-
+	
+	private static Controller controller;
+	
 	public static void main(String[] args) {
 		
 		
@@ -17,8 +19,7 @@ public class Application {
 			@Override
 			public void run() {
 				MainFrame view = new MainFrame();
-				Controller controller = new Controller(view);
-				
+				controller = new Controller(view);		
 			}
 		});
 		
@@ -37,4 +38,11 @@ public class Application {
 		*/
 	}
 
+
+	public static Controller getListener(){
+		System.out.println(controller); // TEST
+		return controller;
+	}
+	
+	
 }

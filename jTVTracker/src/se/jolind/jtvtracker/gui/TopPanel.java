@@ -81,46 +81,49 @@ public class TopPanel extends JPanel {
 		updateSeasons(numberOfSeasons);
 
 	}
-	
+
 	public void setShowName(String name, String year, String endYear) {
 		lblShowName.setText(name);
-		lblShowPremYear.setText("(" + year + endYear + ")");
+		if (year.equals("No i")) {
+			lblShowPremYear.setText("No information");
+		} else {
+			lblShowPremYear.setText("(" + year + endYear + ")");
+		}
 		cmbSeasons.setVisible(false);
 		cmbEpisodes.setVisible(false);
 	}
-	
+
 	private void updateSeasons(int numberOfSeasons) {
-		
+
 		cmbSeasons.removeAllItems();
-		
+
 		for (int i = 1; i <= numberOfSeasons; i++) {
 			cmbSeasons.addItem("Season " + i);
 		}
-		
+
 		cmbSeasons.setVisible(true);
 		cmbSeasons.setSelectedIndex(0);
-		//view.setSeason(1);
 		updateEpisode(1);
 		cmbSeasons.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				seasonBoxChanged(cmbSeasons.getSelectedIndex()+1);
+				seasonBoxChanged(cmbSeasons.getSelectedIndex() + 1);
 			}
 		});
-		
+
 		cmbEpisodes.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				episodeBoxChanged(cmbEpisodes.getSelectedIndex()+1);
-				
+				episodeBoxChanged(cmbEpisodes.getSelectedIndex() + 1);
+
 			}
 		});
 	}
 
 	private void updateEpisode(int currSeason) {
-
+		cmbEpisodes.removeAllItems();
 		Show currShow = view.getShow();
 		int numberOfEpisodes = currShow.getNumberOfEps(currSeason);
 
@@ -128,12 +131,10 @@ public class TopPanel extends JPanel {
 			cmbEpisodes.addItem(i + " " + currShow.getEpisodeName(currSeason, i));
 		}
 		cmbEpisodes.setVisible(true);
-		//view.setEp(1);
 	}
 
 	private void seasonBoxChanged(int chSeason) {
-		System.out.println("SeasonBoxChanged called. Value: "+chSeason); // TEST
-		if (chSeason == 0){
+		if (chSeason == 0) {
 			chSeason = 1;
 		}
 		cmbEpisodes.removeAllItems();
@@ -143,7 +144,7 @@ public class TopPanel extends JPanel {
 
 	private void episodeBoxChanged(int chEp) {
 		if (chEp == 0){
-			chEp = 1;
+		 chEp = 1;
 		} else {
 		view.setEp(chEp);
 		}

@@ -13,7 +13,8 @@ import javax.swing.ImageIcon;
 
 import se.jolind.jtvtracker.data.tvmaze.TvmEpisode;
 import se.jolind.jtvtracker.data.tvmaze.TvmShow;
-import se.jolind.jtvtracker.data.AirTime;
+import se.jolind.jtvtracker.gui.MainFrame;
+import se.jolind.jtvtracker.gui.interfaces.IProgress;
 
 /*
  *  Show class. 
@@ -26,7 +27,7 @@ import se.jolind.jtvtracker.data.AirTime;
 public class Show {
 
 	private TvmShow currShow;
-	private String name, lang, url, genres, network, summary, runtime;
+	private String name, lang, url, genres, network, summary, runtime, status;
 	private String time, date, timeZone;
 	private String[] days, imgArray;
 	private int id, numberSeasons, latestEpisode, nextEpisode, updated;
@@ -34,7 +35,8 @@ public class Show {
 	private AirTime premTime;
 	private ImageIcon showImg;
 	private boolean activeShow, hasSeasons, hasTime; // seasonsScanned,
-
+	private IProgress progressListener;
+	
 	private String NEWLINE = "<BR>";
 	private String BOLD = "<B>";
 	private String ENDBOLD = "</B>";
@@ -43,12 +45,14 @@ public class Show {
 
 	public Show(int id) {
 
+		progressListener = MainFrame.getListener();
 
 		currShow = new TvmShow(id);
 
 		// Set boolean checks
 		hasSeasons = checkSeasons();
 		hasTime = currShow.getTimeInfo();
+		activeShow = currShow.getStatus();
 		
 		// Internal values
 		time = currShow.getScheduleTime();
@@ -58,7 +62,6 @@ public class Show {
 		
 		
 		if (hasTime){
-		System.out.println("Creating AirTime (Show) : time: "+time+" date: "+date+" timezone: "+timeZone); // TEST
 		premTime = new AirTime(time, date, timeZone);
 		}
 		
@@ -73,9 +76,9 @@ public class Show {
 		updated = currShow.getUpdated();
 		runtime = currShow.getRuntime();
 		network = currShow.getNetwork();
-		activeShow = currShow.getStatus();
 		days = currShow.getScheduleDays();
 		summary = currShow.getSummary();
+		status = currShow.getStatusString();
 		showImg = createIcon();
 		
 
@@ -120,6 +123,10 @@ public class Show {
 
 	public String getLang() {
 		return lang;
+	}
+	
+	public String getStatusString(){
+		return status;
 	}
 
 	public String getUrl() {
@@ -247,7 +254,7 @@ public class Show {
 	public String getBasicInfo() {
 		String lblReturn = "<HTML>" + BOLD + ITALIC + getGenres() + ENDBOLD + ENDITALIC + NEWLINE + NEWLINE + "Network:"
 				+ NEWLINE + BOLD + getNetwork() + ENDBOLD + NEWLINE + NEWLINE + "Language: " + NEWLINE + BOLD
-				+ getLang() + ENDBOLD + NEWLINE + "Status:" + NEWLINE + BOLD + getStatus() + ENDBOLD + NEWLINE
+				+ getLang() + ENDBOLD + NEWLINE + "Status:" + NEWLINE + BOLD + getStatusString() + ENDBOLD + NEWLINE
 				+ "Air times:" + NEWLINE + BOLD + getOrigTime() + ENDBOLD + " (" + getTimeZone() + ")" + NEWLINE + BOLD
 				+ getLocalTime() + ENDBOLD + " (Local time)" + NEWLINE + NEWLINE + "Runtime:" + NEWLINE + BOLD
 				+ getRuntime() + " minutes" + ENDBOLD + NEWLINE + "</HTML>";
@@ -283,6 +290,9 @@ public class Show {
 
 	private Episode currentEpisode(int seNumber, int epNumber) {
 		Season choosenSeason = seasons.get(seNumber);
+		if (epNumber < 1){
+			epNumber = 1;
+		}
 		Episode choosenEpisode = choosenSeason.getEpisode(epNumber);
 		return choosenEpisode;
 	}
@@ -296,6 +306,9 @@ public class Show {
 	}
 
 	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
+		
+		progressListener.initProgressBar(0, allEps.length);
+		
 		Map<Integer, Season> seasonMap = new HashMap<>();
 		Season currSeason = new Season();
 		int currSeasonNumber = 1;
@@ -313,9 +326,24 @@ public class Show {
 				currSeason.addEpisode(makeEpisode(currId, currEp));
 				currSeason.setSeasonNumber(currSeasonNumber);
 			}
+			progressListener.increaseProgressBar();
 		}
 		seasonMap.put(currSeasonNumber, currSeason);
 		numberSeasons = currSeasonNumber;
+
+		/*
+		 *  Check for empty season information and fill with dummys.
+		 */
+		for (int i = 1; i <= numberSeasons; i++){
+			if (!seasonMap.containsKey(i)){
+				System.out.println("Dummy säsong på g. Säsong: "+i);
+				Episode dummyEp = new Episode();
+				Season dummySeason = new Season();
+				dummySeason.addEpisode(dummyEp);
+				seasonMap.put(i, dummySeason);
+			}
+		}
+		
 		return seasonMap;
 	}
 
@@ -325,6 +353,8 @@ public class Show {
 		return ep;
 
 	}
+	
+	
 	
 	private void scanSeasons() {
 		try {
