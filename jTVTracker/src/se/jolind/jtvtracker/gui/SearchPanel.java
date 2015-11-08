@@ -172,7 +172,7 @@ public class SearchPanel extends JPanel {
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					showListener.ShowChangedEvent(id);
+					showListener.showChangedEvent(id);
 
 				}
 			});

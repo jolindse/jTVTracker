@@ -22,27 +22,9 @@ public class Application {
 				controller = new Controller(view);		
 			}
 		});
-		
-		
-		/*
-		 *	Test console
-		 * 
-		
-		try {
-			ShowTest tester = new ShowTest();
-			tester.testShow();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 	}
-
-
+		
 	public static Controller getListener(){
-		System.out.println(controller); // TEST
 		return controller;
 	}
-	
-	
 }

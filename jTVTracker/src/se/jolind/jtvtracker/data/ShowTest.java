@@ -42,7 +42,7 @@ public class ShowTest {
 				System.out.println(currShow.printEpisode(season, episode));
 				break;
 			case "2":
-				currShow.printShow();
+				System.out.println(currShow);
 				break;
 			case "3":
 				keepMenu = false;

@@ -9,20 +9,26 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import se.jolind.jtvtracker.application.Application;
 import se.jolind.jtvtracker.data.Episode;
+import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
+import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
 public class EpisodePanel extends JPanel {
 	
 	private JLabel lblEpInfo, lblEpRecap, lblEpPic;
-	private Show currShow;
+	private InfoFormat currInfo;
 	private int seasonNumber, epNumber;
 	private GridBagConstraints gc;
+	private IShowChange infoListener;
+	
 	
 	public EpisodePanel(){
 		setLayout(new GridBagLayout());
 		gc = new GridBagConstraints();
 		
+		infoListener = Application.getListener();
 	
 		lblEpInfo = new JLabel(" ");
 		lblEpInfo.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -50,25 +56,11 @@ public class EpisodePanel extends JPanel {
 		gc.fill = GridBagConstraints.BOTH;
 		add(lblEpRecap, gc);
 	}
-
-	public void setCurrentEp(Show currShow, int seasonNumber, int epNumber){
-		this.currShow = currShow;
-		this.seasonNumber = seasonNumber;
-		this.epNumber = epNumber;
-	}
 	
 	public void updateInfo(){
-		if (seasonNumber == 0){
-			seasonNumber = 1;
-		}
-		if (epNumber == 0){
-			epNumber = 1;
-		}
-		Episode chEp = currShow.getEpisode(seasonNumber, epNumber);
-		ImageIcon currEpImage = new ImageIcon(chEp.getMediumImg());
 		
-		
-		lblEpPic.setIcon(currEpImage);
+		currInfo = infoListener.getInformation();
+		lblEpPic.setIcon(currInfo.getEpisodeImage());
 		
 		gc.gridx = 1;
 		gc.gridy = 0;
@@ -77,7 +69,7 @@ public class EpisodePanel extends JPanel {
 		gc.gridwidth = 1;
 		add(lblEpPic, gc);
 		
-		lblEpInfo.setText(chEp.getBasicInfo());
-		lblEpRecap.setText(chEp.getRecap());
+		lblEpInfo.setText(currInfo.getEpisodeInfo());
+		lblEpRecap.setText(currInfo.getEpisodeSummary());
 	}
 }

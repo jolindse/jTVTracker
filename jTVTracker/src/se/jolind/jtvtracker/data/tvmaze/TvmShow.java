@@ -64,37 +64,26 @@ public class TvmShow {
 	}
 
 	public String getRuntime() {
-		// return rootObject.get("runtime").getAsString();
-		//return checkNull(rootObject, "runtime");
 		return rootObject.get("runtime").isJsonNull() ? "No information" : rootObject.get("runtime").getAsString();
 	}
 
 	public String getName() {
-		//return checkNull(rootObject, "name");
-		// return rootObject.get("name").getAsString();
 		return rootObject.get("name").isJsonNull() ? "No information" : rootObject.get("name").getAsString();
 	}
 
 	public String getType() {
-		//return checkNull(rootObject, "type");
-		// return rootObject.get("type").getAsString();
 		return rootObject.get("type").isJsonNull() ? "No information" : rootObject.get("type").getAsString();
 	}
 
 	public String getLang() {
-		//return checkNull(rootObject, "language");
-		// return rootObject.get("language").getAsString();
 		return rootObject.get("language").isJsonNull() ? "No information" : rootObject.get("language").getAsString();
 	}
 
 	public String getSummary() {
-		//return checkNull(rootObject, "summary");
-		// return rootObject.get("summary").getAsString();
 		return rootObject.get("summary").isJsonNull() ? "No information" : rootObject.get("summary").getAsString();
 	}
 
 	public String getStatusString() {
-		//return checkNull(rootObject, "status");
 		return rootObject.get("status").isJsonNull() ? "No information" : rootObject.get("status").getAsString();
 	}
 	
@@ -242,8 +231,6 @@ public class TvmShow {
 	
 	public String getPremiereDate() {
 		return rootObject.get("premiered").isJsonNull() ? "No information" : rootObject.get("premiered").getAsString();
-		//return checkNull(rootObject, "premiered");
-		// return rootObject.get("premiered").getAsString();
 	}
 	
 	public String[] getScheduleDays() {
@@ -281,28 +268,6 @@ public class TvmShow {
 		return timeZone;
 	}
 	
-	
-	// INTERNAL METHODS
-	/*
-	private String checkNull(JsonObject currentObject, String key) {
-
-		if (currentObject.isJsonNull()){
-			return "No information";
-		}
-		return currentObject.get(key).toString();
-		//return currentObject.get(key).getAsString();
-		/*
-		String result = currentObject.get(key).getAsString();
-		System.out.println("Key: "+key+" Result: "+result); // TEST
-		if (result.equals("") || result.equals("null")) {
-			result = "No information";
-		}
-		return result;
-		
-		return currentObject.isJsonNull() ? "No information" : currentObject.getAsString();
-		
-	}
-	*/
 	private String getEpisodeId(String epUrl) {
 		if (epUrl.length() > 30){
 		return epUrl.substring(31);

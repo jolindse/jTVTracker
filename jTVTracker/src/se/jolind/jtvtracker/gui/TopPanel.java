@@ -12,23 +12,28 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
+import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
 public class TopPanel extends JPanel {
 
-	private MainFrame view;
 	private JLabel lblShowName;
 	private JLabel lblShowPremYear;
 	private JLabel lblLogo;
 	private JComboBox cmbSeasons;
 	private JComboBox cmbEpisodes;
 
-	public TopPanel(MainFrame view) {
+	private InfoFormat currInfo;
+	private IShowChange infoListener;
+
+	public TopPanel() {
 		setPreferredSize(new Dimension(400, 60));
 		setLayout(new GridBagLayout());
 		GridBagConstraints gc = new GridBagConstraints();
 
-		this.view = view;
+		infoListener = Application.getListener();
 
 		lblShowName = new JLabel(" ");
 		lblShowName.setFont(new Font("Serif", Font.BOLD, 20));
@@ -74,36 +79,35 @@ public class TopPanel extends JPanel {
 
 	}
 
-	public void setShowNameFull(String name, String year, String endYear, int numberOfSeasons) {
-		lblShowName.setText(name);
-		lblShowPremYear.setText("(" + year + endYear + ")");
+	public void updateInfo() {
+		currInfo = infoListener.getInformation();
 
-		updateSeasons(numberOfSeasons);
-
+		lblShowName.setText(currInfo.getShowName());
+		lblShowPremYear.setText(makeYears());
 	}
 
-	public void setShowName(String name, String year, String endYear) {
-		lblShowName.setText(name);
-		if (year.equals("No i")) {
-			lblShowPremYear.setText("No information");
-		} else {
-			lblShowPremYear.setText("(" + year + endYear + ")");
+	private String makeYears() {
+		String startYear = currInfo.getStartYear();
+		String endYear = currInfo.getEndYear();
+
+		if (currInfo.isActiveShow()) {
+			return "(" + startYear + "-)";
 		}
-		cmbSeasons.setVisible(false);
-		cmbEpisodes.setVisible(false);
+
+		if (startYear.equals("No information")) {
+			return startYear;
+		}
+
+		return "(" + startYear + "-" + endYear + ")";
 	}
 
-	private void updateSeasons(int numberOfSeasons) {
-
+	private void updateSeasons() {
 		cmbSeasons.removeAllItems();
-
-		for (int i = 1; i <= numberOfSeasons; i++) {
-			cmbSeasons.addItem("Season " + i);
-		}
-
+		cmbSeasons.addItem(currInfo.populateSeasons());
 		cmbSeasons.setVisible(true);
 		cmbSeasons.setSelectedIndex(0);
-		updateEpisode(1);
+
+		updateEpisode();
 		cmbSeasons.addActionListener(new ActionListener() {
 
 			@Override
@@ -112,6 +116,12 @@ public class TopPanel extends JPanel {
 			}
 		});
 
+	}
+
+	private void updateEpisode() {
+		cmbEpisodes.removeAllItems();
+		cmbEpisodes.addItem(currInfo.populateEpisodes());
+		cmbEpisodes.setVisible(true);
 		cmbEpisodes.addActionListener(new ActionListener() {
 
 			@Override
@@ -120,34 +130,18 @@ public class TopPanel extends JPanel {
 
 			}
 		});
+
 	}
 
-	private void updateEpisode(int currSeason) {
+	private void seasonBoxChanged(int number) {
 		cmbEpisodes.removeAllItems();
-		Show currShow = view.getShow();
-		int numberOfEpisodes = currShow.getNumberOfEps(currSeason);
+		infoListener.seasonChangedEvent(number);
+		updateEpisode();
 
-		for (int i = 1; i <= numberOfEpisodes; i++) {
-			cmbEpisodes.addItem(i + " " + currShow.getEpisodeName(currSeason, i));
-		}
-		cmbEpisodes.setVisible(true);
 	}
 
-	private void seasonBoxChanged(int chSeason) {
-		if (chSeason == 0) {
-			chSeason = 1;
-		}
-		cmbEpisodes.removeAllItems();
-		updateEpisode(chSeason);
-		view.setSeason(chSeason);
-	}
-
-	private void episodeBoxChanged(int chEp) {
-		if (chEp == 0){
-		 chEp = 1;
-		} else {
-		view.setEp(chEp);
-		}
+	private void episodeBoxChanged(int number) {
+		infoListener.episodeChangedEvent(number);
 	}
 
 }

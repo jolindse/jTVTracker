@@ -35,7 +35,7 @@ public class Show {
 	private Map<Integer, Season> seasons;
 	private AirTime premTime;
 	private ImageIcon showImg;
-	private boolean activeShow, hasSeasons, hasTime; // seasonsScanned,
+	private boolean activeShow, hasSeasons, hasTime; 
 	private IProgress progressListener;
 	
 	private String NEWLINE = "<BR>";
@@ -86,19 +86,6 @@ public class Show {
 		scanSeasons();
 		
 	}
-	
-	/*
-	private void scanSeasons() {
-		try {
-			seasons = makeSeasons(currShow.getAllEpId());
-			// seasonsScanned = true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// return seasonsScanned;
-	}
-	*/
 	
 	// STATUS BOOLEANS
 
@@ -236,15 +223,6 @@ public class Show {
 		return icon;
 	}
 
-	// PRINT METHOD FOR TESTING
-	
-	public void printShow() {
-		for (int i = 1; i < numberSeasons; i++) {
-			Season currSeason = seasons.get(i);
-			currSeason.printSeasonEps();
-		}
-	}
-
 	// SHOW SEASON INFORMATION GETTERS
 	
 	public int getNumberOfEps(int seNumber) {
@@ -337,7 +315,7 @@ public class Show {
 		 */
 		for (int i = 1; i <= numberSeasons; i++){
 			if (!seasonMap.containsKey(i)){
-				System.out.println("Dummy säsong på g. Säsong: "+i);
+				// System.out.println("Dummy säsong på g. Säsong: "+i);
 				Episode dummyEp = new Episode();
 				Season dummySeason = new Season();
 				dummySeason.addEpisode(dummyEp);

@@ -11,21 +11,27 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
+import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
 public class ShowPanel extends JPanel {
 
 	private JComboBox cmbxSeason;
 	private JLabel lblShowInfo, lblShowRecap, lblShowPic;
 	private GridBagConstraints gc;
-	private Show currShow;
-
+	private InfoFormat currInfo;
+	private IShowChange infoListener;
+	
 	public ShowPanel() {
 
 		// Set layout
 		setLayout(new GridBagLayout());
 		gc = new GridBagConstraints();
 
+		infoListener = Application.getListener();
+		
 		// Init components
 		lblShowInfo = new JLabel(" ");
 		lblShowInfo.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -55,15 +61,12 @@ public class ShowPanel extends JPanel {
 
 	}
 	
-	public void setCurrShow(Show currShow){
-		this.currShow = currShow;
-	}
-	
 	public void updateInfo(){
+		currInfo = infoListener.getInformation();
 		
 		// Picture
 		lblShowPic = new JLabel();
-		lblShowPic.setIcon(currShow.getMediumImg());
+		lblShowPic.setIcon(currInfo.getShowImage());
 		gc.gridx = 1;
 		gc.gridy = 0;
 		gc.weightx = 0.1;
@@ -72,7 +75,7 @@ public class ShowPanel extends JPanel {
 		add(lblShowPic, gc);
 		
 		// ShowInfo and summary
-		lblShowInfo.setText(currShow.getBasicInfo());
-		lblShowRecap.setText(currShow.getSummary());
+		lblShowInfo.setText(currInfo.getShowInfo());
+		lblShowRecap.setText(currInfo.getShowSummary());
 	}
 }

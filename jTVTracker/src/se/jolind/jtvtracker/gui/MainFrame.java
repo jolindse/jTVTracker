@@ -10,28 +10,33 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
-import se.jolind.jtvtracker.application.Controller;
+import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.data.tvmaze.TvmShortShow;
+import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
 public class MainFrame extends JFrame {
 
-	private Show currShow;
+	private InfoFormat currInfo;
+	private IShowChange infoListener;
 	private TopPanel topPanel;
 	private BottomPanel bottomPanel;
 	private ShowPanel showPanel;
 	private EpisodePanel episodePanel;
 	private SearchPanel searchPanel;
 	private JTabbedPane contentPane;
-	private static Controller controller;
-
-	private int currSeason, currEp;
+	
+	private boolean showTab, episodeTab;
+	
+	//private int currSeason, currEp;
 
 	public MainFrame() {
 		super("jTVTracker v0.01a");
 		this.setSize(new Dimension(600, 750));
 		this.setLayout(new BorderLayout());
-
+		infoListener = Application.getListener();
+		
 		// Set native platform look And feel.
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -84,24 +89,35 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		topPanel = new TopPanel(this);
+		topPanel = new TopPanel();
 		bottomPanel = new BottomPanel();
 		searchPanel = new SearchPanel();
 		showPanel = new ShowPanel();
 		episodePanel = new EpisodePanel();
 
 		contentPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPane.addTab("Series", showPanel);
-		contentPane.addTab("Episode", episodePanel);
+				
+		contentPane.addTab("Search", searchPanel);
 
-		createTabs();
+		showTab = false;
+		episodeTab = false;
 
 		add(topPanel, BorderLayout.NORTH);
 		add(bottomPanel, BorderLayout.SOUTH);
 		add(contentPane, BorderLayout.CENTER);
 
+		
 		this.setVisible(true);
 
+	}
+	
+	// Update view
+	
+	public void updateInfo(){
+		currInfo = infoListener.getInformation();
+		if (currInfo != null){
+			createTabs();
+		}
 	}
 
 	// TABS MANAGMENT
@@ -109,18 +125,20 @@ public class MainFrame extends JFrame {
 	private void createTabs() {
 		contentPane.removeAll();
 		contentPane.addTab("Search", searchPanel);
-		if (currShow != null) {
-			showPanel = new ShowPanel();
-			contentPane.addTab("Series", showPanel);
-			if (currShow.isSeasons()) {
+		showPanel = new ShowPanel();
+		contentPane.addTab("Series", showPanel);
+		showTab = true;
+		if (currInfo.hasSeasons()) {
 				episodePanel = new EpisodePanel();
 				contentPane.addTab("Episode", episodePanel);
+				episodeTab = true;
+			} else {
+				episodeTab = false;
 			}
-		}
 	}
 
 	// SHOW AND EPISODE METHODS
-	
+	/*
 	public void setShow(Show currShow) {
 		this.currShow = currShow;
 		contentPane.removeAll();
@@ -130,30 +148,31 @@ public class MainFrame extends JFrame {
 		setInfo();
 		contentPane.setSelectedIndex(1);
 	}
+	*/
 
-	public void setEp(int currEp) {
-		this.currEp = currEp;
-		episodePanel.setCurrentEp(currShow, currSeason, currEp);
-		episodePanel.updateInfo();
-		contentPane.setSelectedIndex(2);
+	
+	public void updateView() {
+		
+		if (showTab) {
+			showPanel.updateInfo();
+			contentPane.setSelectedIndex(1);
+		}
+		
+		if (episodeTab) {
+			episodePanel.updateInfo();
+			contentPane.setSelectedIndex(2);
+		}
+		
 	}
-
-	public void setSeason(int currSeason) {
-		this.currSeason = currSeason;
-		currEp = 1;
-	}
-
-	public Show getShow() {
-		return currShow;
-	}
-
+	
 	public void newSearch(List<TvmShortShow> currResults) {
 		searchPanel = new SearchPanel(currResults);
 		contentPane.removeTabAt(0);
 		contentPane.insertTab("Search", null, searchPanel, "", 0);
 		contentPane.setSelectedIndex(0);
 	}
-
+	
+	/*
 	private void setInfo() {
 		String endyear = "";
 
@@ -171,7 +190,8 @@ public class MainFrame extends JFrame {
 		showPanel.setCurrShow(currShow);
 		showPanel.updateInfo();
 	}
-
+	*/
+	
 	public void initProgressBar(int min, int max){
 		bottomPanel.setProgressValues(min, max);
 	}
@@ -179,13 +199,5 @@ public class MainFrame extends JFrame {
 	public void increaseProgressBar(){
 		bottomPanel.increaseProgress();
 	}
-	/*
-	public void setListener(Controller controller) {
-		this.controller = controller;
-	}
 
-	public static Controller getListener() {
-		return controller;
-	}
-	*/
 }

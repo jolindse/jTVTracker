@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Instant;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class Episode {
 
@@ -59,7 +59,7 @@ public class Episode {
 		return name;
 	}
 
-	public String getRecap() {
+	public String getSummary() {
 		return "<HTML>" + recap + "</HTML>";
 	}
 
@@ -107,7 +107,7 @@ public class Episode {
 		return time;
 	}
 
-	public Image getMediumImg() {
+	public ImageIcon getMediumImg() {
 		URL imgUrl;
 		Image mediumImg = null;
 		if (getImgMediumUrl().equals("resources/noImage.png")) {
@@ -129,7 +129,7 @@ public class Episode {
 				e.printStackTrace();
 			}
 		}
-		return mediumImg;
+		return new ImageIcon(mediumImg);
 	}
 
 	public String getBasicInfo() {
