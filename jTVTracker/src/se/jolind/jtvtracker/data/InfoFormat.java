@@ -159,6 +159,7 @@ public class InfoFormat {
 	}
 	
 	public String[] populateEpisodes() {
+		
 		int numberOfEpisodes = currShow.getNumberOfEps(seasonNumber);
 		String[] episodeArray = new String[numberOfEpisodes];
 		for (int i = 1; i <= numberOfEpisodes; i++){
@@ -166,7 +167,7 @@ public class InfoFormat {
 			if (episodeName.equals("")){
 				episodeName = "No information";
 			}
-			episodeArray[i-1] = episodeName;
+			episodeArray[i-1] = String.format("%2d %s", i, episodeName);
 		}
 		if (episodeArray.length > 0){
 			return episodeArray;
@@ -183,9 +184,7 @@ public class InfoFormat {
 				+ timeZone + ", epZonedTime=" + epZonedTime + ", epLocalTime=" + epLocalTime + ", shZonedTime="
 				+ shZonedTime + ", shLocalTime=" + shLocalTime + ", days=" + days + ", localdays=" + localdays
 				+ ", premYear=" + premYear + ", endYear=" + endYear + ", shImage=" + shImage + ", epImage=" + epImage
-				+ ", activeShow=" + activeShow + ", episodes=" + episodes + ", showId=" + showId + ", epNumber="
-				+ epNumber + ", seasonNumber=" + seasonNumber + ", currShow=" + currShow + ", currEp=" + currEp
-				+ ", currSeason=" + currSeason + "]";
+				+ ", activeShow=" + activeShow + ", episodes=" + episodes + ", showId=" + showId;
 	}
 	
 	

@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.Episode;
 import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
@@ -28,7 +29,7 @@ public class EpisodePanel extends JPanel {
 		setLayout(new GridBagLayout());
 		gc = new GridBagConstraints();
 		
-		infoListener = Application.getListener();
+		infoListener = Controller.getListener();
 	
 		lblEpInfo = new JLabel(" ");
 		lblEpInfo.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -58,6 +59,10 @@ public class EpisodePanel extends JPanel {
 	}
 	
 	public void updateInfo(){
+		
+		if (infoListener == null){
+			infoListener = Controller.getListener();
+		}
 		
 		currInfo = infoListener.getInformation();
 		lblEpPic.setIcon(currInfo.getEpisodeImage());

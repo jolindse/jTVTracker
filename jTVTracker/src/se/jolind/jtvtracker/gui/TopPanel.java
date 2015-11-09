@@ -7,14 +7,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.InfoFormat;
-import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
 public class TopPanel extends JPanel {
@@ -22,8 +24,9 @@ public class TopPanel extends JPanel {
 	private JLabel lblShowName;
 	private JLabel lblShowPremYear;
 	private JLabel lblLogo;
-	private JComboBox cmbSeasons;
-	private JComboBox cmbEpisodes;
+	private GridBagConstraints gc;
+	private JComboBox<String> cmbSeasons;
+	private JComboBox<String> cmbEpisodes;
 
 	private InfoFormat currInfo;
 	private IShowChange infoListener;
@@ -31,19 +34,18 @@ public class TopPanel extends JPanel {
 	public TopPanel() {
 		setPreferredSize(new Dimension(400, 60));
 		setLayout(new GridBagLayout());
-		GridBagConstraints gc = new GridBagConstraints();
+		gc = new GridBagConstraints();
 
-		infoListener = Application.getListener();
+		infoListener = Controller.getListener();
 
 		lblShowName = new JLabel(" ");
 		lblShowName.setFont(new Font("Serif", Font.BOLD, 20));
 		lblLogo = new JLabel("JTvTracker");
 		lblShowPremYear = new JLabel(" ");
 
-		cmbSeasons = new JComboBox<String>();
+		cmbSeasons = new JComboBox<>();
+		cmbEpisodes = new JComboBox<>();
 		cmbSeasons.setVisible(false);
-
-		cmbEpisodes = new JComboBox<String>();
 		cmbEpisodes.setVisible(false);
 
 		gc.gridx = 0;
@@ -77,13 +79,21 @@ public class TopPanel extends JPanel {
 		gc.anchor = GridBagConstraints.EAST;
 		add(cmbEpisodes, gc);
 
-	}
+		}
 
 	public void updateInfo() {
+		if (infoListener == null) {
+			infoListener = Controller.getListener();
+		}
+
 		currInfo = infoListener.getInformation();
 
 		lblShowName.setText(currInfo.getShowName());
 		lblShowPremYear.setText(makeYears());
+		if (currInfo.hasSeasons()) {
+			updateSeasons();
+			updateEpisode();
+		}
 	}
 
 	private String makeYears() {
@@ -102,46 +112,57 @@ public class TopPanel extends JPanel {
 	}
 
 	private void updateSeasons() {
-		cmbSeasons.removeAllItems();
-		cmbSeasons.addItem(currInfo.populateSeasons());
-		cmbSeasons.setVisible(true);
-		cmbSeasons.setSelectedIndex(0);
-
-		updateEpisode();
-		cmbSeasons.addActionListener(new ActionListener() {
-
+		currInfo = infoListener.getInformation();
+		
+		cmbSeasons.setModel(new DefaultComboBoxModel<>(currInfo.populateSeasons()));
+		
+		cmbSeasons.addItemListener(new ItemListener() {
+			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				seasonBoxChanged(cmbSeasons.getSelectedIndex() + 1);
+			public void itemStateChanged(ItemEvent e) {
+				seasonBoxChanged(cmbSeasons.getSelectedIndex());
+				
 			}
 		});
-
+		cmbSeasons.setVisible(true);
+		updateEpisode();
 	}
 
 	private void updateEpisode() {
-		cmbEpisodes.removeAllItems();
-		cmbEpisodes.addItem(currInfo.populateEpisodes());
-		cmbEpisodes.setVisible(true);
-		cmbEpisodes.addActionListener(new ActionListener() {
+		currInfo = infoListener.getInformation();
+		cmbEpisodes.setModel(new DefaultComboBoxModel<>(currInfo.populateEpisodes()));
 
+		cmbEpisodes.addItemListener(new ItemListener() {
+			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				episodeBoxChanged(cmbEpisodes.getSelectedIndex() + 1);
-
+			public void itemStateChanged(ItemEvent e) {
+				
+				episodeBoxChanged(cmbEpisodes.getSelectedIndex());
 			}
 		});
-
+		
+		cmbEpisodes.setVisible(true);
+		
+		gc.gridx = 1;
+		gc.gridy = 1;
+		gc.weightx = 0.1;
+		gc.weighty = 0.1;
+		gc.insets = new Insets(0, 10, 0, 10);
+		gc.anchor = GridBagConstraints.EAST;
+		add(cmbEpisodes, gc);
 	}
 
 	private void seasonBoxChanged(int number) {
-		cmbEpisodes.removeAllItems();
-		infoListener.seasonChangedEvent(number);
+		if (number != 0){
+		infoListener.seasonChangedEvent(number+1);
 		updateEpisode();
-
+		}
 	}
 
 	private void episodeBoxChanged(int number) {
-		infoListener.episodeChangedEvent(number);
+		if (number != 0) {
+			infoListener.episodeChangedEvent(number+1);
+		}
 	}
 
 }

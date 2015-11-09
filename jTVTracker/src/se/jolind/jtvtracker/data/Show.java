@@ -11,10 +11,9 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.tvmaze.TvmEpisode;
 import se.jolind.jtvtracker.data.tvmaze.TvmShow;
-import se.jolind.jtvtracker.gui.MainFrame;
 import se.jolind.jtvtracker.gui.interfaces.IProgress;
 
 /*
@@ -46,7 +45,7 @@ public class Show {
 
 	public Show(int id) {
 
-		progressListener = Application.getListener();
+		progressListener = Controller.getListener();
 
 		currShow = new TvmShow(id);
 
@@ -216,7 +215,12 @@ public class Show {
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					mediumImg = ImageIO.read(new File("resources/noImage.png"));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 		ImageIcon icon = new ImageIcon(mediumImg);

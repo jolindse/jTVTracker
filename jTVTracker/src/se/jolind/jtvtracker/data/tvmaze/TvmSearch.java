@@ -48,7 +48,7 @@ public class TvmSearch {
 		buildList();
 	}
 
-	public void buildList() {
+	private void buildList() {
 		resultList = new ArrayList<>();
 		for (int i = 0; i < searchArray.size(); i++) {
 			JsonObject currRoot = searchArray.get(i).getAsJsonObject();
@@ -64,24 +64,38 @@ public class TvmSearch {
 
 	private ImageIcon makeImgIcon(String imgUrlString) {
 		// Get image original size
+		boolean imgFromUrl = false;
 		URL imgUrl;
 		Image mediumImg = null;
 		try {
-			if (imgUrlString.equals("resources/noImage.png")) {
-
-				mediumImg = ImageIO.read(new File(imgUrlString));
-			} else {
+				if (!imgUrlString.equals("resources/noImage.png")){
 				imgUrl = new URL(imgUrlString);
 				mediumImg = ImageIO.read(imgUrl);
-			}
+				imgFromUrl = true;
+				}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// Do nothing
+		}
+		if (imgFromUrl){
+		// Resize and create ImageIcon
+		Image scaledImg = mediumImg.getScaledInstance(60, 75, Image.SCALE_SMOOTH);
+		ImageIcon returnIcon = new ImageIcon(scaledImg);
+		return returnIcon;
+		}
+		return getDefaultIcon();
+	}
+	
+	private ImageIcon getDefaultIcon(){
+		Image mediumImg = null;
+		try {
+			mediumImg = ImageIO.read(new File("resources/noImage.png"));
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// Resize and create ImageIcon
 		Image scaledImg = mediumImg.getScaledInstance(60, 75, Image.SCALE_SMOOTH);
 		ImageIcon returnIcon = new ImageIcon(scaledImg);
 		return returnIcon;

@@ -13,6 +13,7 @@ import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
 public class Controller implements IShowChange, ISearchRequest, IProgress {
 
+	private static Controller listener;
 	private MainFrame view;
 	private int id, seasonNumber, episodeNumber;
 	private Show currShow;
@@ -21,10 +22,25 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 	public Controller(MainFrame view) {
 		this.view = view;
 	}
-
+	
+	public void createListnerHandler(Controller handler){
+		listener = handler;
+	}
+	
+	public static Controller getListener(){
+		return listener;
+	}
 
 	private void makeShow(int showId) {
 		currShow = new Show(showId);
+	}
+	
+	private void setSeasonNumber(int number){
+		this.seasonNumber = number;
+	}
+	
+	private void setEpisodeNumber(int number){
+		this.episodeNumber = number;
 	}
 
 	// IShowChange interface methods
@@ -44,11 +60,12 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 				id = showId;
 				currInfo = new InfoFormat(id, currShow);
 				if (currInfo.hasSeasons()){
-					seasonNumber = 1;
-					episodeNumber = 1;
+					setSeasonNumber(1);
+					setEpisodeNumber(1);
+					currInfo.setEpisode(seasonNumber, episodeNumber);
+					view.updateInfo();
 				}
-				System.out.println("CurrInfo: "+currInfo); // TEST
-				view.updateInfo();
+				
 			}
 			
 		};
@@ -58,24 +75,26 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 	@Override
 	public void episodeChangedEvent(int episodeNumber) {
 		if (currInfo.hasSeasons()){
+				setEpisodeNumber(episodeNumber);
 				currInfo.setEpisode(seasonNumber, episodeNumber);
 				view.updateView();
-		}
+			}
 	}
 
 	@Override
 	public void seasonChangedEvent(int seasonNumber) {
 		if (currInfo.hasSeasons()){
-			currInfo.setEpisode(seasonNumber, episodeNumber);
-			view.updateView();
+			if (seasonNumber < 1){
+				setSeasonNumber(1);
+			}
+			setSeasonNumber(seasonNumber);
+			currInfo.setEpisode(seasonNumber, 1);
 		}
-		
+		view.updateView();
 	}
 	
 	@Override
 	public InfoFormat getInformation() {
-		System.out.println("Returning currInfo from controller:\n"); //
-		System.out.println(currInfo); //
 		return currInfo;
 	}
 	
@@ -99,5 +118,5 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 		view.increaseProgressBar();
 		
 	}
-
+	
 }

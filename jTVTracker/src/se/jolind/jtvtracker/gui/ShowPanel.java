@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
@@ -30,7 +31,7 @@ public class ShowPanel extends JPanel {
 		setLayout(new GridBagLayout());
 		gc = new GridBagConstraints();
 
-		infoListener = Application.getListener();
+		infoListener = Controller.getListener();
 		
 		// Init components
 		lblShowInfo = new JLabel(" ");
@@ -62,6 +63,11 @@ public class ShowPanel extends JPanel {
 	}
 	
 	public void updateInfo(){
+
+		if (infoListener == null){
+			infoListener = Controller.getListener();
+		}
+		
 		currInfo = infoListener.getInformation();
 		
 		// Picture

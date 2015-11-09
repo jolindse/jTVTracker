@@ -38,15 +38,15 @@ public class Episode {
 			time = new AirTime(zClock, epDate, timeZone);
 		}
 	}
-	
-	public Episode(){
+
+	public Episode() {
 		this.id = 0;
 		this.name = "No information";
 		this.number = 1;
 		this.recap = "No information.";
 		this.epDate = "0000-00-00";
 		this.url = "No information";
-		this.imgArray = new String[] { "resources/noImage.png","resources/noImage.png" };
+		this.imgArray = new String[] { "resources/noImage.png", "resources/noImage.png" };
 		this.timeZone = "No information";
 		timeInfo = false;
 	}
@@ -125,8 +125,12 @@ public class Episode {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					mediumImg = ImageIO.read(new File("resources/noImage.png"));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 		return new ImageIcon(mediumImg);

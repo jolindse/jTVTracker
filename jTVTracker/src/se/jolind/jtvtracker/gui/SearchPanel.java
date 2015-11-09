@@ -2,7 +2,6 @@ package se.jolind.jtvtracker.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import se.jolind.jtvtracker.application.Application;
+import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.tvmaze.TvmShortShow;
 import se.jolind.jtvtracker.gui.interfaces.ISearchRequest;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
@@ -73,7 +73,7 @@ public class SearchPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (searchListener == null) {
-					searchListener = Application.getListener();
+					searchListener = Controller.getListener();
 				}
 
 				String currString = fieldSearch.getText();
@@ -120,7 +120,7 @@ public class SearchPanel extends JPanel {
 		JLabel lblFiller = new JLabel(" ");
 
 		if (showListener == null) {
-			showListener = Application.getListener();
+			showListener = Controller.getListener();
 		}
 
 		JLabel[] searchName = new JLabel[searchList.size()];
