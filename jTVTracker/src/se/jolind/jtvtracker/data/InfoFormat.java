@@ -174,4 +174,19 @@ public class InfoFormat {
 		String[] emptyArray = { "Empty" };
 		return emptyArray;
 	}
+
+	@Override
+	public String toString() {
+		return "InfoFormat [shName=" + shName + ", shSummary=" + shSummary + ", genres=" + genres + ", language="
+				+ language + ", network=" + network + ", shStatus=" + shStatus + ", runtime=" + runtime + ", epName="
+				+ epName + ", epSummary=" + epSummary + ", numberOfSeasons=" + numberOfSeasons + ", timeZone="
+				+ timeZone + ", epZonedTime=" + epZonedTime + ", epLocalTime=" + epLocalTime + ", shZonedTime="
+				+ shZonedTime + ", shLocalTime=" + shLocalTime + ", days=" + days + ", localdays=" + localdays
+				+ ", premYear=" + premYear + ", endYear=" + endYear + ", shImage=" + shImage + ", epImage=" + epImage
+				+ ", activeShow=" + activeShow + ", episodes=" + episodes + ", showId=" + showId + ", epNumber="
+				+ epNumber + ", seasonNumber=" + seasonNumber + ", currShow=" + currShow + ", currEp=" + currEp
+				+ ", currSeason=" + currSeason + "]";
+	}
+	
+	
 }

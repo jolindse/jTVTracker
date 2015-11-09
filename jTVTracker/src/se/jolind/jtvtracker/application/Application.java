@@ -19,12 +19,19 @@ public class Application {
 			@Override
 			public void run() {
 				MainFrame view = new MainFrame();
-				controller = new Controller(view);		
+				Controller controllerHandler = new Controller(view);
+				setController(controllerHandler);
 			}
 		});
+		System.out.println("Main controller: "+controller);
 	}
-		
+	
+	private static void setController(Controller controllerHandler){
+		controller = controllerHandler;
+	}
+	
 	public static Controller getListener(){
+		System.out.println("Application listener: "+ controller); // TEST
 		return controller;
 	}
 }

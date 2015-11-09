@@ -36,6 +36,7 @@ public class MainFrame extends JFrame {
 		this.setSize(new Dimension(600, 750));
 		this.setLayout(new BorderLayout());
 		infoListener = Application.getListener();
+		System.out.println("Listener init: " + infoListener); // TEST
 		
 		// Set native platform look And feel.
 		try {
@@ -114,9 +115,12 @@ public class MainFrame extends JFrame {
 	// Update view
 	
 	public void updateInfo(){
+		System.out.println("Listener: " + infoListener); // TEST
 		currInfo = infoListener.getInformation();
+		System.out.println(currInfo); // TEST
 		if (currInfo != null){
 			createTabs();
+			topPanel.updateInfo();
 		}
 	}
 

@@ -43,6 +43,12 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 			public void done(){
 				id = showId;
 				currInfo = new InfoFormat(id, currShow);
+				if (currInfo.hasSeasons()){
+					seasonNumber = 1;
+					episodeNumber = 1;
+				}
+				System.out.println("CurrInfo: "+currInfo); // TEST
+				view.updateInfo();
 			}
 			
 		};
@@ -53,6 +59,7 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 	public void episodeChangedEvent(int episodeNumber) {
 		if (currInfo.hasSeasons()){
 				currInfo.setEpisode(seasonNumber, episodeNumber);
+				view.updateView();
 		}
 	}
 
@@ -60,12 +67,15 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 	public void seasonChangedEvent(int seasonNumber) {
 		if (currInfo.hasSeasons()){
 			currInfo.setEpisode(seasonNumber, episodeNumber);
+			view.updateView();
 		}
 		
 	}
 	
 	@Override
 	public InfoFormat getInformation() {
+		System.out.println("Returning currInfo from controller:\n"); //
+		System.out.println(currInfo); //
 		return currInfo;
 	}
 	
