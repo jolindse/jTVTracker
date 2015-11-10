@@ -10,8 +10,8 @@ public class InfoFormat {
 	private int numberOfSeasons;
 	private String timeZone, epZonedTime, epLocalTime, shZonedTime, shLocalTime, days, localdays, premYear, endYear;
 	private ImageIcon shImage, epImage;
-	
-	boolean activeShow, episodes;
+
+	boolean activeShow, episodes, hasNext;
 
 	// Internal variables
 	private String NEWLINE = "<BR>";
@@ -21,21 +21,20 @@ public class InfoFormat {
 	private String ENDITALIC = "</I>";
 
 	private int showId, epNumber, seasonNumber;
-	
+
 	private Show currShow;
-	private Episode currEp;
+	private Episode currEp, nextEp;
 	private Season currSeason;
-	
-	
-	public InfoFormat(int showId, Show currShow){
+
+	public InfoFormat(int showId, Show currShow) {
 		this.currShow = currShow;
 		this.showId = showId;
 		makeShowInfo();
 	}
-	
+
 	// METHODS USED FROM CONTROLLER
-	
-	public boolean setEpisode(int season, int episode){
+
+	public boolean setEpisode(int season, int episode) {
 		boolean operationOk = false;
 		seasonNumber = season;
 		epNumber = episode;
@@ -43,13 +42,14 @@ public class InfoFormat {
 		makeEpisodeInfo();
 		return operationOk;
 	}
-	
+
 	// INTERNAL METHODS
-	
-	private void makeShowInfo(){
+
+	private void makeShowInfo() {
 		activeShow = currShow.isActiveShow();
 		episodes = currShow.isSeasons();
-		
+		hasNext = currShow.checkNext();
+
 		// Basic info
 		shName = currShow.getName();
 		network = currShow.getNetwork();
@@ -59,9 +59,9 @@ public class InfoFormat {
 		shStatus = currShow.getStatusString();
 		language = currShow.getLang();
 		runtime = currShow.getRuntime();
-		
+
 		shImage = currShow.getMediumImg();
-		
+
 		// Time info
 		premYear = currShow.getPremYear();
 		endYear = currShow.getEndYear();
@@ -69,107 +69,120 @@ public class InfoFormat {
 		shLocalTime = currShow.getLocalTime();
 		timeZone = currShow.getTimeZone();
 	}
-	
-	private void makeEpisodeInfo(){
+
+	private void makeEpisodeInfo() {
 		// Basic info
 		epName = currEp.getName();
 		epSummary = currEp.getSummary();
-		
+
 		epImage = currEp.getMediumImg();
-		
+
 		// Time info
 		epZonedTime = currEp.getZonedTime() + " " + currEp.getZonedDate();
 		epLocalTime = currEp.getLocalTime() + " " + currEp.getLocalDate();
 	}
-	
+
 	// SHOW GETTERS
-	
-	public boolean isActiveShow(){
+
+	public boolean isActiveShow() {
 		return activeShow;
 	}
-	
-	public boolean hasSeasons(){
+
+	public boolean hasSeasons() {
 		return episodes;
 	}
-		
-	public String getShowName(){
+
+	public String getShowName() {
 		return shName;
 	}
-	
-	public ImageIcon getShowImage(){
+
+	public ImageIcon getShowImage() {
 		return shImage;
 	}
-	
-	public String getShowSummary(){
+
+	public String getShowSummary() {
 		return shSummary;
 	}
-	
-	public String getStartYear(){
+
+	public String getStartYear() {
 		return premYear;
 	}
-	
-	public String getEndYear(){
+
+	public String getEndYear() {
 		return endYear;
 	}
-	
+
 	// EPISODE GETTERS
-	
-	public int getEpisodeNumber(){
+
+	public int getEpisodeNumber() {
 		return epNumber;
 	}
-	
-	public ImageIcon getEpisodeImage(){
+
+	public ImageIcon getEpisodeImage() {
 		return epImage;
 	}
-	
-	public String getEpisodeSummary(){
+
+	public String getEpisodeSummary() {
 		return epSummary;
 	}
-	
+
+	private String getNextEpInfo() {
+		String lblReturn = "Next episode:" + NEWLINE;
+		nextEp = currShow.getNextEp();
+		lblReturn += nextEp.getNumber() + ". " + BOLD + nextEp.getName() + ENDBOLD + NEWLINE + "Air time:" + NEWLINE
+				+ BOLD + nextEp.getZonedDate() + " " + nextEp.getZonedTime() + ENDBOLD + " (" + timeZone + ")" + NEWLINE
+				+ BOLD + nextEp.getLocalDate() + " " + nextEp.getLocalTime() + ENDBOLD + " (Local time)";
+		return lblReturn;
+	}
+
 	// FORMATTING METHODS
-	
+
 	public String getShowInfo() {
 		String lblReturn = "<HTML>" + BOLD + ITALIC + genres + ENDBOLD + ENDITALIC + NEWLINE + NEWLINE + "Network:"
-				+ NEWLINE + BOLD + network + ENDBOLD + NEWLINE + NEWLINE + "Language: " + NEWLINE + BOLD
-				+ language + ENDBOLD + NEWLINE + "Status:" + NEWLINE + BOLD + shStatus + ENDBOLD + NEWLINE
-				+ "Air times:" + NEWLINE + BOLD + shZonedTime + ENDBOLD + " (" + timeZone + ")" + NEWLINE + BOLD
-				+ shLocalTime + ENDBOLD + " (Local time)" + NEWLINE + NEWLINE + "Runtime:" + NEWLINE + BOLD
-				+ runtime + " minutes" + ENDBOLD + NEWLINE + "</HTML>";
+				+ NEWLINE + BOLD + network + ENDBOLD + NEWLINE + NEWLINE + "Language: " + NEWLINE + BOLD + language
+				+ ENDBOLD + NEWLINE + "Status:" + NEWLINE + BOLD + shStatus + ENDBOLD + NEWLINE + "Air times:" + NEWLINE
+				+ BOLD + shZonedTime + ENDBOLD + " (" + timeZone + ")" + NEWLINE + BOLD + shLocalTime + ENDBOLD
+				+ " (Local time)" + NEWLINE + "Runtime:" + NEWLINE + BOLD + runtime + " minutes" + ENDBOLD
+				+ NEWLINE + NEWLINE;
+		if (hasNext) {
+			lblReturn += getNextEpInfo();
+		}
+		lblReturn += "</HTML>";
 		return lblReturn;
-	
+
 	}
-	
+
 	public String getEpisodeInfo() {
 		String lblReturn = "<HTML>" + BOLD + epName + ENDBOLD + NEWLINE + NEWLINE + "Aired: " + NEWLINE + BOLD
-				+ epZonedTime + timeZone + ENDBOLD + NEWLINE 
-				+ BOLD + epLocalTime + " (Local time)" + ENDBOLD + NEWLINE + "</HTML>";
+				+ epZonedTime + timeZone + ENDBOLD + NEWLINE + BOLD + epLocalTime + " (Local time)" + ENDBOLD + NEWLINE
+				+ "</HTML>";
 		return lblReturn;
 	}
-	
+
 	public String[] populateSeasons() {
-		if (numberOfSeasons != 0){
+		if (numberOfSeasons != 0) {
 			String[] seasonsArray = new String[numberOfSeasons];
-			for (int i = 1; i <= numberOfSeasons; i++){
-				seasonsArray[i-1] = "Season " + i;	
+			for (int i = 1; i <= numberOfSeasons; i++) {
+				seasonsArray[i - 1] = "Season " + i;
 			}
 			return seasonsArray;
-		} 
+		}
 		String[] emptyArray = { "Empty" };
 		return emptyArray;
 	}
-	
+
 	public String[] populateEpisodes() {
-		
+
 		int numberOfEpisodes = currShow.getNumberOfEps(seasonNumber);
 		String[] episodeArray = new String[numberOfEpisodes];
-		for (int i = 1; i <= numberOfEpisodes; i++){
+		for (int i = 1; i <= numberOfEpisodes; i++) {
 			String episodeName = currShow.getEpisodeName(seasonNumber, i);
-			if (episodeName.equals("")){
+			if (episodeName.equals("")) {
 				episodeName = "No information";
 			}
-			episodeArray[i-1] = String.format("%2d %s", i, episodeName);
+			episodeArray[i - 1] = String.format("%2d %s", i, episodeName);
 		}
-		if (episodeArray.length > 0){
+		if (episodeArray.length > 0) {
 			return episodeArray;
 		}
 		String[] emptyArray = { "Empty" };
@@ -186,6 +199,5 @@ public class InfoFormat {
 				+ ", premYear=" + premYear + ", endYear=" + endYear + ", shImage=" + shImage + ", epImage=" + epImage
 				+ ", activeShow=" + activeShow + ", episodes=" + episodes + ", showId=" + showId;
 	}
-	
-	
+
 }

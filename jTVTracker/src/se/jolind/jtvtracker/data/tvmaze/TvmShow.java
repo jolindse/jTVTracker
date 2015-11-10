@@ -1,6 +1,5 @@
 package se.jolind.jtvtracker.data.tvmaze;
 
-import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,13 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import se.jolind.jtvtracker.data.Episode;
 
 /*
  * 
@@ -86,11 +85,11 @@ public class TvmShow {
 	public String getStatusString() {
 		return rootObject.get("status").isJsonNull() ? "No information" : rootObject.get("status").getAsString();
 	}
-	
+
 	public boolean getTimeInfo() {
 		return timeInfoOk;
 	}
-	
+
 	public String getPreEpUrl() {
 		String strReturn = "No information";
 		JsonObject links = rootObject.getAsJsonObject("_links");
@@ -111,6 +110,15 @@ public class TvmShow {
 		} catch (NullPointerException e) {
 		}
 		return strReturn;
+	}
+
+	public Episode getNextEp() {
+		int nextId = Integer.parseInt(getEpisodeId(getNextEpUrl()));
+		TvmEpisode nextEpNet = new TvmEpisode(nextId);
+		Episode nextEp = new Episode(nextId, nextEpNet.getName(), nextEpNet.getNumber(), nextEpNet.getSummary(),
+				getNextEpUrl(), nextEpNet.getImgUrl(), nextEpNet.getAirDate(), getTimeZone(), nextEpNet.getAirTime(),
+				true);
+		return nextEp;
 	}
 
 	public String getGenres() {
@@ -207,32 +215,32 @@ public class TvmShow {
 	public int getNumberOfSeasons() {
 		TvmEpisode latestEp;
 		int number = 0;
-		try {
+		//try {
 			String epUrl = getPreEpUrl();
-			if (!epUrl.equals("No information")){
-			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(epUrl)));
-			number = latestEp.getSeason();
-			}
-		} catch (NumberFormatException | IOException e) {
-			e.printStackTrace();
+			if (!epUrl.equals("No information")) {
+				latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(epUrl)));
+				number = latestEp.getSeason();
 		}
+		/*} catch (NumberFormatException) {
+			e.printStackTrace();
+		}*/
 		return number;
 	}
 
 	// TIME VALUES
-	
-	private boolean checkTimeInfo(){
+
+	private boolean checkTimeInfo() {
 		String noInfo = "No information";
 		if (getPremiereDate().equals(noInfo) || getScheduleTime().equals(noInfo)) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	public String getPremiereDate() {
 		return rootObject.get("premiered").isJsonNull() ? "No information" : rootObject.get("premiered").getAsString();
 	}
-	
+
 	public String[] getScheduleDays() {
 		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
 		JsonArray jsDays = jsSchedule.getAsJsonArray("days");
@@ -245,10 +253,10 @@ public class TvmShow {
 	}
 
 	public String getScheduleTime() {
-		
+
 		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
 		String hour = jsSchedule.get("time").getAsString();
-		if (hour.equals(":") || hour.equals("")){
+		if (hour.equals(":") || hour.equals("")) {
 			return "No information";
 		}
 		return hour;
@@ -267,10 +275,10 @@ public class TvmShow {
 		}
 		return timeZone;
 	}
-	
+
 	private String getEpisodeId(String epUrl) {
-		if (epUrl.length() > 30){
-		return epUrl.substring(31);
+		if (epUrl.length() > 30) {
+			return epUrl.substring(31);
 		}
 		return "0";
 	}

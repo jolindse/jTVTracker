@@ -20,16 +20,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import se.jolind.jtvtracker.application.Controller;
+import se.jolind.jtvtracker.gui.interfaces.IProgress;
+
 public class TvmSearch {
 
 	private String searchBaseUrl = "http://api.tvmaze.com/search/shows?q=";
+	private IProgress progressListener;
 	private JsonArray searchArray;
 	private List<TvmShortShow> resultList;
-	// private JsonObject rootObject;
 	private Gson converter;
 
 	public TvmSearch(String searchString) {
 		searchString = searchString.replace(" ", "+");
+		
+		progressListener = Controller.getListener();
 
 		String sURL = searchBaseUrl + searchString;
 
@@ -50,6 +55,9 @@ public class TvmSearch {
 
 	private void buildList() {
 		resultList = new ArrayList<>();
+		
+		progressListener.initProgressBar(0, searchArray.size());
+		
 		for (int i = 0; i < searchArray.size(); i++) {
 			JsonObject currRoot = searchArray.get(i).getAsJsonObject();
 			JsonObject currShow = currRoot.get("show").getAsJsonObject();
@@ -59,6 +67,7 @@ public class TvmSearch {
 			ImageIcon currIcon = makeImgIcon(getImageUrl(currShow));
 			TvmShortShow currShortShow = new TvmShortShow(currId, currName, currSummary, currIcon);
 			resultList.add(currShortShow);
+			progressListener.increaseProgressBar();
 		}
 	}
 

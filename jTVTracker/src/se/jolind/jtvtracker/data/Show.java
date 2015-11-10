@@ -34,7 +34,7 @@ public class Show {
 	private Map<Integer, Season> seasons;
 	private AirTime premTime;
 	private ImageIcon showImg;
-	private boolean activeShow, hasSeasons, hasTime; 
+	private boolean activeShow, hasSeasons, hasTime, hasNext, favoriteShow; 
 	private IProgress progressListener;
 	
 	private String NEWLINE = "<BR>";
@@ -53,6 +53,7 @@ public class Show {
 		hasSeasons = checkSeasons();
 		hasTime = currShow.getTimeInfo();
 		activeShow = currShow.getStatus();
+		hasNext = checkNext();
 		
 		// Internal values
 		time = currShow.getScheduleTime();
@@ -94,6 +95,14 @@ public class Show {
 
 	public boolean isActiveShow() {
 		return activeShow;
+	}
+
+	public boolean hasNextEpisode() {
+		return hasNext;
+	}
+	
+	public void setFavoriteShow(boolean value){
+		this.favoriteShow = value;
 	}
 	
 	// SHOW INFORMATION
@@ -146,6 +155,18 @@ public class Show {
 	
 	public ImageIcon getMediumImg() {
 		return showImg;
+	}
+	
+	public Episode getNextEp() {
+		return currShow.getNextEp();
+	}
+	
+	public boolean checkNext() {
+		boolean nextEpisode = true; 
+		if (currShow.getNextEpUrl().equals("No information")){
+			nextEpisode = false;
+		}
+		return nextEpisode;
 	}
 
 	// TIME GETTERS
@@ -347,16 +368,6 @@ public class Show {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// return seasonsScanned;
 	}
-
-	private String getStatus() {
-		String statusStr = "";
-		if (activeShow) {
-			statusStr = "Running";
-		} else {
-			statusStr = "Canceled";
-		}
-		return statusStr;
-	}
+	
 }

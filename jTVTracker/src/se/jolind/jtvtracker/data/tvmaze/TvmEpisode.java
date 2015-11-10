@@ -8,8 +8,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /*
  *  Wrapper class for episode info from tvmaze.com
@@ -23,17 +25,33 @@ public class TvmEpisode {
 	private JsonObject rootObject;
 	private String epBaseUrl = "http://api.tvmaze.com/episodes/";
 
-	public TvmEpisode(int id) throws IOException {
+	public TvmEpisode(int id) {
 		sURL = epBaseUrl + Integer.toString(id);
 
 		// Connect to the URL using java's native library
-		URL url = new URL(sURL);
-		HttpURLConnection request = (HttpURLConnection) url.openConnection();
-		request.connect();
+		URL url;
+		JsonElement root = null;
+		try {
+			url = new URL(sURL);
+			HttpURLConnection request = (HttpURLConnection) url.openConnection();
+			request.connect();
+			// Convert to a JSON object to print data
+			JsonParser jp = new JsonParser(); // from gson
+			root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonSyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		// Convert to a JSON object to print data
-		JsonParser jp = new JsonParser(); // from gson
-		JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
 		rootObject = root.getAsJsonObject(); // May be an array, may be
 	}
 
@@ -71,11 +89,11 @@ public class TvmEpisode {
 
 	public String[] getImgUrl() {
 		String[] imageArray = new String[2];
-		if (rootObject.get("image").isJsonNull()){
+		if (rootObject.get("image").isJsonNull()) {
 			imageArray[0] = "resources/noImage.png";
 			imageArray[1] = "resources/noImage.png";
-		}else{
-		JsonObject image = rootObject.getAsJsonObject("image");
+		} else {
+			JsonObject image = rootObject.getAsJsonObject("image");
 			imageArray[0] = image.get("medium").getAsString();
 			imageArray[1] = image.get("original").getAsString();
 		}
