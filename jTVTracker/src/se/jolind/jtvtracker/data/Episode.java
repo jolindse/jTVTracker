@@ -1,6 +1,7 @@
 package se.jolind.jtvtracker.data;
 
 import java.awt.Image;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,6 +9,10 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
+/*
+ * Class to store episode information
+ */
 
 public class Episode {
 
@@ -40,6 +45,8 @@ public class Episode {
 	}
 
 	public Episode() {
+		// Dummy episode constructor used when no information is available except the existance of 
+		// an episode.
 		this.id = 0;
 		this.name = "No information";
 		this.number = 1;
@@ -52,26 +59,45 @@ public class Episode {
 	}
 
 	public int getNumber() {
+		/*
+		 * Returns the number of the episode.
+		 */
 		return number;
 	}
 
 	public String getName() {
+		/*
+		 * Returns the name of the episode.
+		 */
 		return name;
 	}
 
 	public String getSummary() {
+		/*
+		 * Returns the episode summary.
+		 */
 		return "<HTML>" + recap + "</HTML>";
 	}
 
 	public String getImgMediumUrl() {
+		/*
+		 * Returns the URL of the medium sized image
+		 */
 		return imgArray[0];
 	}
 
 	public String getImgFullUrl() {
+		/*
+		 * Returns the URL of the full sized image
+		 */
 		return imgArray[1];
 	}
 
 	public String getEndYear() {
+		/*
+		 * Returns the end year of the show
+		 */
+		
 		if (timeInfo) {
 			return time.getYear();
 		}
@@ -79,6 +105,9 @@ public class Episode {
 	}
 
 	public String getLocalTime() {
+		/*
+		 * Returns the local time as string
+		 */
 		if (timeInfo) {
 			return time.getLocalTimeAsString();
 		}
@@ -86,6 +115,9 @@ public class Episode {
 	}
 
 	public String getLocalDate() {
+		/*
+		 * Returns the local date as string
+		 */
 		if (timeInfo) {
 			return time.getLocalDateAsString();
 		}
@@ -93,6 +125,9 @@ public class Episode {
 	}
 
 	public String getZonedTime() {
+		/*
+		 * Returns the original time as string
+		 */
 		if (timeInfo) {
 			return time.getZonedTimeAsString();
 		}
@@ -100,14 +135,23 @@ public class Episode {
 	}
 
 	public String getZonedDate() {
+		/*
+		 * Returns the original date as string
+		 */
 		return epDate;
 	}
 
 	public AirTime getAirTime() {
+		/*
+		 * Returns the AirTime object of the episode
+		 */
 		return time;
 	}
 
 	public ImageIcon getMediumImg() {
+		/*
+		 * Returns a ImageIcon of the medium image of the episode 
+		 */
 		URL imgUrl;
 		Image mediumImg = null;
 		if (getImgMediumUrl().equals("resources/noImage.png")) {
@@ -137,6 +181,9 @@ public class Episode {
 	}
 
 	public String getBasicInfo() {
+		/*
+		 * Returns a HTML formatted string of information about the episode.
+		 */
 		String lblReturn = "<HTML>" + BOLD + getName() + ENDBOLD + NEWLINE + NEWLINE + "Aired: " + NEWLINE + BOLD
 				+ epDate + " " + getZonedTime() + " " + timeZone + ENDBOLD + NEWLINE + BOLD + getLocalDate() + " "
 				+ getLocalTime() + " (Local time)" + ENDBOLD + NEWLINE + "</HTML>";

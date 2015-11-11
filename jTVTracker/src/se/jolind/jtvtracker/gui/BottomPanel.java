@@ -17,6 +17,11 @@ public class BottomPanel extends JPanel {
 	private JProgressBar progressBar;
 	private int progressValue;
 	
+	/*
+	 * The bottom panel containing a exit button and the progressbar
+	 * for current operation.
+	 */
+	
 	public BottomPanel(){
 		
 		setPreferredSize(new Dimension(400,40));
@@ -26,8 +31,6 @@ public class BottomPanel extends JPanel {
 		
 		btnExit = new JButton("Exit");
 
-		// setBackground(Color.BLUE);
-		
 		progressBar = new JProgressBar();
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(100);
@@ -50,6 +53,10 @@ public class BottomPanel extends JPanel {
 	}
 	
 	public void setProgressValues(int min, int max){
+		/*
+		 * Method called from the controller when a new progressable 
+		 * operation is initiated.
+		 */
 		progressBar.setMinimum(min);
 		progressBar.setMaximum(max);
 		progressBar.setStringPainted(true);
@@ -57,6 +64,10 @@ public class BottomPanel extends JPanel {
 	}
 	
 	public void increaseProgress(){
+		/*
+		 * Method called from the controller when a progressable process
+		 * is progressing. 
+		 */
 		progressValue++;
 		progressBar.setValue(progressValue);
 		progressBar.repaint();

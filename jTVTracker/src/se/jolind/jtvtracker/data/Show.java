@@ -17,11 +17,7 @@ import se.jolind.jtvtracker.data.tvmaze.TvmShow;
 import se.jolind.jtvtracker.gui.interfaces.IProgress;
 
 /*
- *  Show class. 
- *  ------------------------
- *  Saves show data and has references to the season class associated 
- *  with the current show.
- *  
+ *  The show class
  */
 
 public class Show {
@@ -90,78 +86,132 @@ public class Show {
 	// STATUS BOOLEANS
 
 	public boolean isSeasons(){
+		/*
+		 * Returns true if a show has season information
+		 */
 		return hasSeasons;
 	}
 
 	public boolean isActiveShow() {
+		/*
+		 * Returns true if a show is active and not canceled
+		 */
 		return activeShow;
 	}
 
 	public boolean hasNextEpisode() {
+		/*
+		 * Returns true if the show contains information on the next episode to be aired.
+		 */
 		return hasNext;
 	}
 	
 	public void setFavoriteShow(boolean value){
+		/*
+		 * Sets the favorite boolean
+		 */
 		this.favoriteShow = value;
 	}
 	
 	// SHOW INFORMATION
 
 	public String getName() {
+		/*
+		 * Returns the show name
+		 */
 		return name;
 	}
 
 	public String getPremYear() {
+		/*
+		 * Returns the premiere year of the show
+		 */
 		if (hasTime){
 		return premTime.getYear();
 		}
 		return date.substring(0,4);	}
 
 	public String getLang() {
+		/*
+		 * Returns the language of the show
+		 */
 		return lang;
 	}
 	
 	public String getStatusString(){
+		/*
+		 * Returns the status of the show as string
+		 */
 		return status;
 	}
 
 	public String getUrl() {
+		/*
+		 * Returns the URL of the show
+		 */
 		return url;
 	}
 
 	public String getGenres() {
+		/*
+		 * Returns the genres 
+		 */
 		return genres;
 	}
 
 	public String getSummary() {
+		/*
+		 * Returns the show summary
+		 */
 		return "<HTML>" + summary + "</HTML>";
 	}
 
 	public int getId() {
+		/*
+		 * Returns the show id
+		 */
 		return id;
 	}
 
 	public String getRuntime() {
+		/*
+		 * Returns the runtime of the show
+		 */
 		return runtime;
 	}
 
 	public String getNetwork() {
+		/*
+		 * Returns the shows airing network
+		 */
 		return network;
 	}
 
 	public int getNumberSeasons() {
+		/*
+		 * Returns the number of seasons of the show
+		 */
 		return numberSeasons;
 	}
 	
 	public ImageIcon getMediumImg() {
+		/*
+		 * Returns the show image
+		 */
 		return showImg;
 	}
 	
 	public Episode getNextEp() {
+		/*
+		 * Returns the next episode
+		 */
 		return currShow.getNextEp();
 	}
 	
 	public boolean checkNext() {
+		/*
+		 * Checks if the show has a next episode information
+		 */
 		boolean nextEpisode = true; 
 		if (currShow.getNextEpUrl().equals("No information")){
 			nextEpisode = false;
@@ -172,6 +222,9 @@ public class Show {
 	// TIME GETTERS
 	
 	public String getTimeZone() {
+		/*
+		 * Returns the timezone of the show
+		 */
 		if(hasTime){
 		return timeZone;
 		}
@@ -180,6 +233,9 @@ public class Show {
 
 
 	public String getOrigTime() {
+		/*
+		 * Returns the original time of show
+		 */
 		if (hasTime){
 		String day = "";
 		if (days.length > 1) {
@@ -196,6 +252,9 @@ public class Show {
 	}
 
 	public String getLocalTime() {
+		/*
+		 * Returns the local time of the show
+		 */
 		if (hasTime && hasSeasons){
 		int latestSeason = getNumberSeasons();
 		int latestEpisode = getNumberOfEps(latestSeason);
@@ -208,6 +267,9 @@ public class Show {
 	}
 	
 	public String getEndYear() {
+		/*
+		 * Returns the endyear of the show
+		 */
 		if (hasSeasons){
 		int lastSeason = getNumberSeasons();
 		int lastEpisode = getNumberOfEps(lastSeason);
@@ -218,6 +280,9 @@ public class Show {
 	}
 
 	private ImageIcon createIcon() {
+		/*
+		 * Makes an ImageIcon from an image
+		 */
 		URL imgUrl;
 		Image mediumImg = null;
 		if (getImgMediumUrl().equals("resources/noImage.png")) {
@@ -251,10 +316,13 @@ public class Show {
 	// SHOW SEASON INFORMATION GETTERS
 	
 	public int getNumberOfEps(int seNumber) {
+		/*
+		 * Returns the number of episodes in a season 
+		 */
 		Season currSeason = seasons.get(seNumber);
 		return currSeason.getNumberOfEpisodes();
 	}
-
+/*
 	public String getBasicInfo() {
 		String lblReturn = "<HTML>" + BOLD + ITALIC + getGenres() + ENDBOLD + ENDITALIC + NEWLINE + NEWLINE + "Network:"
 				+ NEWLINE + BOLD + getNetwork() + ENDBOLD + NEWLINE + NEWLINE + "Language: " + NEWLINE + BOLD
@@ -264,20 +332,30 @@ public class Show {
 				+ getRuntime() + " minutes" + ENDBOLD + NEWLINE + "</HTML>";
 		return lblReturn;
 	}
-
+	*/
+	
 	// SHOW EPISODE INFORMATION GETTERS
 
 	public Episode getEpisode(int seNumber, int epNumber) {
+		/*
+		 * Returns the selected episode
+		 */
 		return currentEpisode(seNumber, epNumber);
 	}
 
 	public String getEpisodeName(int seNumber, int epNumber) {
+		/*
+		 * Returns the name of the selected episode
+		 */
 		Season chSeason = seasons.get(seNumber);
 		Episode chEp = chSeason.getEpisode(epNumber);
 		return chEp.getName();
 	}
 
 	public String printEpisode(int seasonNumber, int currEpisode) {
+		/*
+		 * Returns the selected episode for output to console
+		 */
 		Episode currEp = currentEpisode(seasonNumber, currEpisode);
 		return currEp.toString();
 	}
@@ -285,14 +363,23 @@ public class Show {
 	// INTERNAL METHODS
 
 	private String getImgMediumUrl() {
+		/*
+		 * Returns the medium img url
+		 */
 		return imgArray[0];
 	}
 
 	private String getImgFullUrl() {
+		/*
+		 * Returns the full img url
+		 */
 		return imgArray[1];
 	}
 
 	private Episode currentEpisode(int seNumber, int epNumber) {
+		/*
+		 * Returns the selected episode
+		 */
 		Season choosenSeason = seasons.get(seNumber);
 		if (epNumber < 1){
 			epNumber = 1;
@@ -302,6 +389,9 @@ public class Show {
 	}
 
 	private boolean checkSeasons() {
+		/*
+		 * Checks if show has seasons
+		 */
 		boolean seasonsNotNull = false;
 		if (currShow.getNumberOfSeasons() > 0) {
 			seasonsNotNull = true;
@@ -310,7 +400,9 @@ public class Show {
 	}
 
 	private Map<Integer, Season> makeSeasons(int[] allEps) throws IOException {
-		
+		/*
+		 * Makes the seasons of the show
+		 */
 		progressListener.initProgressBar(0, allEps.length);
 		
 		Map<Integer, Season> seasonMap = new HashMap<>();
@@ -352,6 +444,9 @@ public class Show {
 	}
 
 	private Episode makeEpisode(int epId, TvmEpisode currEp) {
+		/*
+		 * Makes an episode
+		 */
 		Episode ep = new Episode(epId, currEp.getName(), currEp.getNumber(), currEp.getSummary(), currEp.getsURL(),
 				currEp.getImgUrl(), currEp.getAirDate(), timeZone, time, hasTime);
 		return ep;
@@ -361,6 +456,9 @@ public class Show {
 	
 	
 	private void scanSeasons() {
+		/*
+		 * Makes all seasons
+		 */
 		try {
 			seasons = makeSeasons(currShow.getAllEpId());
 			// seasonsScanned = true;

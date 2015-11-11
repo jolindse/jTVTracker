@@ -34,18 +34,22 @@ public class InfoFormat {
 
 	// METHODS USED FROM CONTROLLER
 
-	public boolean setEpisode(int season, int episode) {
-		boolean operationOk = false;
+	public void setEpisode(int season, int episode) {
+		/*
+		 * sets the current episode and season
+		 */
 		seasonNumber = season;
 		epNumber = episode;
 		currEp = currShow.getEpisode(season, episode);
 		makeEpisodeInfo();
-		return operationOk;
 	}
 
 	// INTERNAL METHODS
 
 	private void makeShowInfo() {
+		/*
+		 * Populates the information of the current instance.
+		 */
 		activeShow = currShow.isActiveShow();
 		episodes = currShow.isSeasons();
 		hasNext = currShow.checkNext();
@@ -71,6 +75,10 @@ public class InfoFormat {
 	}
 
 	private void makeEpisodeInfo() {
+		/*
+		 * Populates the episode information of the instance.
+		 */
+		
 		// Basic info
 		epName = currEp.getName();
 		epSummary = currEp.getSummary();
@@ -85,48 +93,81 @@ public class InfoFormat {
 	// SHOW GETTERS
 
 	public boolean isActiveShow() {
+		/*
+		 * Returns the boolean true if the show is still on air.
+		 */
 		return activeShow;
 	}
 
 	public boolean hasSeasons() {
+		/*
+		 * Returns the boolean true if the show has seasons and episode information
+		 */
 		return episodes;
 	}
 
 	public String getShowName() {
+		/*
+		 * Returns the show name
+		 */
 		return shName;
 	}
 
 	public ImageIcon getShowImage() {
+		/*
+		 * Returns the ImageIcon of the show
+		 */
 		return shImage;
 	}
 
 	public String getShowSummary() {
+		/*
+		 * Returns the show summary
+		 */
 		return shSummary;
 	}
 
 	public String getStartYear() {
+		/*
+		 * Returns the premiere year of the show
+		 */
 		return premYear;
 	}
 
 	public String getEndYear() {
+		/*
+		 * Returns the end year of the show
+		 */
 		return endYear;
 	}
 
 	// EPISODE GETTERS
 
 	public int getEpisodeNumber() {
+		/*
+		 * Returns the episode number
+		 */
 		return epNumber;
 	}
 
 	public ImageIcon getEpisodeImage() {
+		/*
+		 * Returns the ImageIcon of the episode
+		 */
 		return epImage;
 	}
 
 	public String getEpisodeSummary() {
+		/*
+		 * Returns the episode summary
+		 */
 		return epSummary;
 	}
 
 	private String getNextEpInfo() {
+		/*
+		 * Gets the HTML formatted information of the next episode.
+		 */
 		String lblReturn = "Next episode:" + NEWLINE;
 		nextEp = currShow.getNextEp();
 		lblReturn += nextEp.getNumber() + ". " + BOLD + nextEp.getName() + ENDBOLD + NEWLINE + "Air time:" + NEWLINE
@@ -138,6 +179,9 @@ public class InfoFormat {
 	// FORMATTING METHODS
 
 	public String getShowInfo() {
+		/*
+		 * Returns the HTML formatted show information.
+		 */
 		String lblReturn = "<HTML>" + BOLD + ITALIC + genres + ENDBOLD + ENDITALIC + NEWLINE + NEWLINE + "Network:"
 				+ NEWLINE + BOLD + network + ENDBOLD + NEWLINE + NEWLINE + "Language: " + NEWLINE + BOLD + language
 				+ ENDBOLD + NEWLINE + "Status:" + NEWLINE + BOLD + shStatus + ENDBOLD + NEWLINE + "Air times:" + NEWLINE
@@ -153,13 +197,19 @@ public class InfoFormat {
 	}
 
 	public String getEpisodeInfo() {
+		/*
+		 * Returns the HTML formatted information of the episode
+		 */
 		String lblReturn = "<HTML>" + BOLD + epName + ENDBOLD + NEWLINE + NEWLINE + "Aired: " + NEWLINE + BOLD
-				+ epZonedTime + timeZone + ENDBOLD + NEWLINE + BOLD + epLocalTime + " (Local time)" + ENDBOLD + NEWLINE
+				+ epZonedTime + " " + timeZone + ENDBOLD + NEWLINE + BOLD + epLocalTime + " (Local time)" + ENDBOLD + NEWLINE
 				+ "</HTML>";
 		return lblReturn;
 	}
 
 	public String[] populateSeasons() {
+		/*
+		 * Makes and returns a string-array of all seasons in a show
+		 */
 		if (numberOfSeasons != 0) {
 			String[] seasonsArray = new String[numberOfSeasons];
 			for (int i = 1; i <= numberOfSeasons; i++) {
@@ -172,6 +222,9 @@ public class InfoFormat {
 	}
 
 	public String[] populateEpisodes() {
+		/*
+		 * Makes and returns a string-array of all episodes of a season.
+		 */
 
 		int numberOfEpisodes = currShow.getNumberOfEps(seasonNumber);
 		String[] episodeArray = new String[numberOfEpisodes];

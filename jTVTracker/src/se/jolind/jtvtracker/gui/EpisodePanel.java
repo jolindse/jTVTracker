@@ -24,6 +24,9 @@ public class EpisodePanel extends JPanel {
 	private GridBagConstraints gc;
 	private IShowChange infoListener;
 	
+	/*
+	 * The episode information panel
+	 */
 	
 	public EpisodePanel(){
 		setLayout(new GridBagLayout());
@@ -59,7 +62,10 @@ public class EpisodePanel extends JPanel {
 	}
 	
 	public void updateInfo(){
-		
+		/*
+		 * Update information on panel called via the mainframe from 
+		 * controller when needed.
+		 */
 		if (infoListener == null){
 			infoListener = Controller.getListener();
 		}

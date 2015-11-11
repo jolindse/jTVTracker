@@ -25,6 +25,10 @@ import se.jolind.jtvtracker.data.tvmaze.TvmShortShow;
 import se.jolind.jtvtracker.gui.interfaces.ISearchRequest;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
+/*
+ * The search panel
+ */
+
 public class SearchPanel extends JPanel {
 
 	private JPanel topPanel, resultsPanel;
@@ -35,6 +39,9 @@ public class SearchPanel extends JPanel {
 	private IShowChange showListener;
 	private ISearchRequest searchListener;
 
+	/*
+	 * Double constructors for when search result is available and not.
+	 */
 	public SearchPanel() {
 		setLayout(new BorderLayout());
 		makeStartFields();
@@ -52,6 +59,9 @@ public class SearchPanel extends JPanel {
 	}
 	
 	private void noSearchDone(){
+		/*
+		 * No search default look.
+		 */
 		resultsPanel = new JPanel();
 		lblResultsInfo = new JLabel("No search conducted...");
 		lblResultsInfo.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -59,6 +69,9 @@ public class SearchPanel extends JPanel {
 	}
 
 	private void makeStartFields() {
+		/*
+		 * Method to initiliase the view at start
+		 */
 		topPanel = new JPanel();
 
 		String defaultTextfieldText = "Enter search terms";
@@ -110,7 +123,9 @@ public class SearchPanel extends JPanel {
 	}
 
 	private void showSearchResults(List<TvmShortShow> searchList) {
-
+		/*
+		 * Method to display the search results.
+		 */
 		resultsPanel = new JPanel();
 		resultsPanel.setLayout(new GridBagLayout());
 		gc = new GridBagConstraints();

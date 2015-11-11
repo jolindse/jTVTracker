@@ -8,7 +8,11 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+/*
+ * Class to handle date and time values stored in show and episode
+ */
 public class AirTime {
+
 
 	private ZonedDateTime origDateTime, localDateTime;
 	private Instant absoluteTime;
@@ -39,19 +43,31 @@ public class AirTime {
 	}
 
 	public ZonedDateTime getLocalTime() {
+		/*
+		 * Returns the time value as local time.
+		 */
 		return localDateTime;
 	}
 	
 	public ZonedDateTime getZonedTime() {
+		/*
+		 * Returns the time value from original timezone.
+		 */
 		return origDateTime;
 		
 	}
 	
 	public String getYear(){
+		/*
+		 * Returns the year
+		 */
 		return Integer.toString(origDateTime.getYear());
 	}
 	
 	public String getLocalDay(){
+		/*
+		 * Returns day as string
+		 */
 		String dayString = "";
 		DayOfWeek day = localDateTime.getDayOfWeek();
 		switch (day){
@@ -81,13 +97,18 @@ public class AirTime {
 	}
 	
 	public String getLocalTimeAsString() {
+		/*
+		 * Returns a formatted string representation of the local time
+		 */
 		int hour = localDateTime.getHour();
 		int minute = localDateTime.getMinute();
 		return String.format("%02d:%02d",hour,minute);
 	}
 
 	public String getLocalDateAsString() {
-		// Convert zoned date to local date and return as string
+		/*
+		 * Returns a formatted string representation of the local date
+		 */
 		int year = localDateTime.getYear();
 		int month = localDateTime.getMonthValue();
 		int day = localDateTime.getDayOfMonth();
@@ -95,15 +116,18 @@ public class AirTime {
 	}
 	
 	public String getZonedTimeAsString() {
-		// Return the time zone time as string
+		/*
+		 * Returns the original time formatted as a string
+		 */
 		int zHour = origDateTime.getHour();
 		int zMinute = origDateTime.getMinute();
 		return String.format("%02d:%02d",zHour,zMinute);
 	}
 
 	public String getZonedDateAsString() {
-		// Get zoned date as string
-		
+		/*
+		 * Returns the original date formatted as a string
+		 */		
 		int zYear = origDateTime.getYear();
 		int zMonth = origDateTime.getMonthValue();
 		int zDay = origDateTime.getDayOfMonth();
@@ -111,6 +135,9 @@ public class AirTime {
 	}
 	
 	public Instant getInstant(){
+		/*
+		 * Returns the original instant
+		 */
 		return absoluteTime;
 	}
 

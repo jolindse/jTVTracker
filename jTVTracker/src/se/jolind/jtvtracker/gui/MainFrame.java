@@ -10,12 +10,15 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
-import se.jolind.jtvtracker.application.Application;
 import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.InfoFormat;
-import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.data.tvmaze.TvmShortShow;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
+
+/*
+ *  The main jframe class that hosts all gui panels and
+ *  acts as a the gui hub for the controller when needed.
+ */
 
 public class MainFrame extends JFrame {
 
@@ -26,13 +29,13 @@ public class MainFrame extends JFrame {
 	private ShowPanel showPanel;
 	private EpisodePanel episodePanel;
 	private SearchPanel searchPanel;
+	private NextEpPanel nextEpPanel;
 	private JTabbedPane contentPane;
 	
 	private boolean showTab, episodeTab;
-	
 
 	public MainFrame() {
-		super("jTVTracker v0.01a");
+		super("jTVTracker v0.1a");
 		this.setSize(new Dimension(600, 750));
 		this.setLayout(new BorderLayout());
 		infoListener = Controller.getListener();
@@ -94,10 +97,12 @@ public class MainFrame extends JFrame {
 		searchPanel = new SearchPanel();
 		showPanel = new ShowPanel();
 		episodePanel = new EpisodePanel();
+		nextEpPanel = new NextEpPanel();
 
 		contentPane = new JTabbedPane(JTabbedPane.TOP);
 				
 		contentPane.addTab("Search", searchPanel);
+		contentPane.addTab("Schedule", nextEpPanel);
 
 		showTab = false;
 		episodeTab = false;
@@ -111,9 +116,12 @@ public class MainFrame extends JFrame {
 
 	}
 	
-	// Update view
-	
 	public void updateInfo(){
+		/*
+		 * The update inforamtion method called from the controller
+		 * when a operation that needs to present new information is
+		 * done. 
+		 */
 		
 		if (infoListener == null){
 			infoListener = Controller.getListener();
@@ -124,11 +132,15 @@ public class MainFrame extends JFrame {
 			createTabs();
 			topPanel.updateInfo();
 		}
+		
 	}
 
 	// TABS MANAGMENT
 
 	private void createTabs() {
+		/*
+		 * Internal method that creates, updates and adds tab to the mainframe.
+		 */
 		contentPane.removeAll();
 		contentPane.addTab("Search", searchPanel);
 		showPanel = new ShowPanel();
@@ -143,10 +155,14 @@ public class MainFrame extends JFrame {
 			} else {
 				episodeTab = false;
 			}
+		contentPane.addTab("Schedule", nextEpPanel);
+		
 	}
 
 	public void updateView() {
-				
+		/*
+		 * Public methods that updates the view from the controller.
+		 */
 		if (showTab) {
 			showPanel.updateInfo();
 			contentPane.setSelectedIndex(1);
@@ -160,7 +176,19 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	public void newShow() {
+		/* 
+		 *  Small method that show the show tab when a new show has been selected
+		 */
+		if (showTab) {
+			contentPane.setSelectedIndex(1);
+		}
+	}
+	
 	public void newSearch(List<TvmShortShow> currResults) {
+		/*
+		 * Method that feeds the searchpanel with the results of the search
+		 */
 		searchPanel = new SearchPanel(currResults);
 		contentPane.removeTabAt(0);
 		contentPane.insertTab("Search", null, searchPanel, "", 0);
@@ -168,10 +196,16 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void initProgressBar(int min, int max){
+		/*
+		 * Wrapper for the init of the progressbar
+		 */
 		bottomPanel.setProgressValues(min, max);
 	}
 	
 	public void increaseProgressBar(){
+		/*
+		 * Wrapper for the progressbar progress method
+		 */
 		bottomPanel.increaseProgress();
 	}
 

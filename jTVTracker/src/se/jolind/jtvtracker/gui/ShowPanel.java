@@ -16,6 +16,9 @@ import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
+/*
+ * The show panel
+ */
 
 public class ShowPanel extends JPanel {
 
@@ -63,6 +66,10 @@ public class ShowPanel extends JPanel {
 	}
 	
 	public void updateInfo(){
+		/*
+		 * The update panel method used from controller via view to 
+		 * update information on panel.
+		 */
 
 		if (infoListener == null){
 			infoListener = Controller.getListener();

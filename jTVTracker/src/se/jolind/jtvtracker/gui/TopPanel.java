@@ -19,6 +19,10 @@ import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
+/*
+ * The top panel
+ */
+
 public class TopPanel extends JPanel {
 
 	private JLabel lblShowName;
@@ -82,6 +86,9 @@ public class TopPanel extends JPanel {
 		}
 
 	public void updateInfo() {
+		/*
+		 * Method used to update info called from controller via view.
+		 */
 		if (infoListener == null) {
 			infoListener = Controller.getListener();
 		}
@@ -97,6 +104,9 @@ public class TopPanel extends JPanel {
 	}
 
 	private String makeYears() {
+		/*
+		 * Formats and displays the show year information.
+		 */
 		String startYear = currInfo.getStartYear();
 		String endYear = currInfo.getEndYear();
 
@@ -112,6 +122,10 @@ public class TopPanel extends JPanel {
 	}
 
 	private void updateSeasons() {
+		/*
+		 * Internal method to update the seasons combobox according to 
+		 * current show set in controller.
+		 */
 		currInfo = infoListener.getInformation();
 		
 		cmbSeasons.setModel(new DefaultComboBoxModel<>(currInfo.populateSeasons()));
@@ -129,6 +143,9 @@ public class TopPanel extends JPanel {
 	}
 
 	private void updateEpisode() {
+		/*
+		 * Method to update episode combobox according to show set in controller.
+		 */
 		currInfo = infoListener.getInformation();
 		cmbEpisodes.setModel(new DefaultComboBoxModel<>(currInfo.populateEpisodes()));
 
@@ -153,6 +170,9 @@ public class TopPanel extends JPanel {
 	}
 
 	private void seasonBoxChanged(int number) {
+		/*
+		 * Method called by the combobox listener to set season in controller.
+		 */
 		if (number != 0){
 		infoListener.seasonChangedEvent(number+1);
 		updateEpisode();
@@ -160,6 +180,9 @@ public class TopPanel extends JPanel {
 	}
 
 	private void episodeBoxChanged(int number) {
+		/*
+		 * Method called by the combobox listener to set episode in controller.
+		 */
 		if (number != 0) {
 			infoListener.episodeChangedEvent(number+1);
 		}
