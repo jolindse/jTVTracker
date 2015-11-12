@@ -2,6 +2,11 @@ package se.jolind.jtvtracker.data.tvmaze;
 
 import javax.swing.ImageIcon;
 
+/*
+ * Class to store basic information on a show based for search result
+ * display. Only used by the search part of the program.
+ */
+
 public class TvmShortShow {
 
 	private int id;
@@ -16,10 +21,16 @@ public class TvmShortShow {
 	}
 
 	public int getId() {
+		/*
+		 * Returns show id
+		 */
 		return id;
 	}
 
 	public String getInfo() {
+		/*
+		 * Returns HTML formatted information about instance for display in search results gui
+		 */
 		String NEWLINE = "<BR>";
 		String BOLD = "<B>";
 		String ENDBOLD = "</B>";
@@ -30,14 +41,23 @@ public class TvmShortShow {
 	}
 	
 	private String getName() {
+		/*
+		 * Returns the name value
+		 */
 		return name;
 	}
 	
 	public ImageIcon getIcon() {
+		/*
+		 * Returns the ImageIcon
+		 */
 		return icon;
 	}
 
 	private String getSummary() {
+		/*
+		 * Returns a summary for display with a max size of 80 characters.
+		 */
 		String returnSummary = "";
 		if (summary.length() > 80) {
 			returnSummary = summary.substring(0, 80) + "...";

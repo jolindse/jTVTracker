@@ -1,3 +1,4 @@
+
 package se.jolind.jtvtracker.data.tvmaze;
 
 import java.io.IOException;
@@ -59,38 +60,66 @@ public class TvmShow {
 	// INFORMATION EXTRACTION METHODS
 
 	public int getId() {
+		/*
+		 * Returns the show id
+		 */
 		return rootObject.get("id").getAsInt();
 	}
 
 	public String getRuntime() {
+		/*
+		 * Returns the runtime
+		 */
 		return rootObject.get("runtime").isJsonNull() ? "No information" : rootObject.get("runtime").getAsString();
 	}
 
 	public String getName() {
+		/*
+		 * Returns the name
+		 */
 		return rootObject.get("name").isJsonNull() ? "No information" : rootObject.get("name").getAsString();
 	}
 
 	public String getType() {
+		/*
+		 * Returns the type of show
+		 */
 		return rootObject.get("type").isJsonNull() ? "No information" : rootObject.get("type").getAsString();
 	}
 
 	public String getLang() {
+		/*
+		 * Returns the show language
+		 */
 		return rootObject.get("language").isJsonNull() ? "No information" : rootObject.get("language").getAsString();
 	}
 
 	public String getSummary() {
+		/*
+		 * Returns the summary
+		 */
 		return rootObject.get("summary").isJsonNull() ? "No information" : rootObject.get("summary").getAsString();
 	}
 
 	public String getStatusString() {
+		/*
+		 * Returns the status as string
+		 */
 		return rootObject.get("status").isJsonNull() ? "No information" : rootObject.get("status").getAsString();
 	}
 
 	public boolean getTimeInfo() {
+		/*
+		 * Returns boolean indicating if information is enough to make a AirDate
+		 * object
+		 */
 		return timeInfoOk;
 	}
 
 	public String getPreEpUrl() {
+		/*
+		 * Returns the previous episode URL
+		 */
 		String strReturn = "No information";
 		JsonObject links = rootObject.getAsJsonObject("_links");
 		try {
@@ -102,6 +131,9 @@ public class TvmShow {
 	}
 
 	public String getNextEpUrl() {
+		/*
+		 * Returns the next episode URL
+		 */
 		JsonObject links = rootObject.getAsJsonObject("_links");
 		String strReturn = "No information";
 		try {
@@ -113,6 +145,9 @@ public class TvmShow {
 	}
 
 	public Episode getNextEp() {
+		/*
+		 * Returns the comming episode as a Episode object
+		 */
 		int nextId = Integer.parseInt(getEpisodeId(getNextEpUrl()));
 		TvmEpisode nextEpNet = new TvmEpisode(nextId);
 		Episode nextEp = new Episode(nextId, nextEpNet.getName(), nextEpNet.getNumber(), nextEpNet.getSummary(),
@@ -122,6 +157,9 @@ public class TvmShow {
 	}
 
 	public String getGenres() {
+		/*
+		 * Returns the genres as a string
+		 */
 		String strReturn = "";
 		JsonArray jsGenre = rootObject.getAsJsonArray("genres");
 		String[] genreList = convJsonArray(jsGenre);
@@ -141,6 +179,9 @@ public class TvmShow {
 	}
 
 	public boolean getStatus() {
+		/*
+		 * Returns a boolean indicating if the show is still running
+		 */
 		boolean runningShow = false;
 		String showString = rootObject.get("status").getAsString();
 		if (showString.equalsIgnoreCase("Running")) {
@@ -150,6 +191,9 @@ public class TvmShow {
 	}
 
 	public String getNetwork() {
+		/*
+		 * Returns the airing network
+		 */
 		String networkName = "";
 		if (isWebSeries) {
 			JsonObject webChannel = rootObject.getAsJsonObject("webChannel");
@@ -162,6 +206,9 @@ public class TvmShow {
 	}
 
 	public String[] getImageUrl() {
+		/*
+		 * Returns an string array with image urls
+		 */
 		String[] imageArray = new String[2];
 		if (rootObject.get("image").isJsonNull()) {
 			imageArray[0] = "resources/noImage.png";
@@ -175,6 +222,9 @@ public class TvmShow {
 	}
 
 	public int getUpdated() {
+		/*
+		 * Returns the int of update information from TvMaze
+		 */
 		int updateTime = rootObject.get("updated").getAsInt();
 		return updateTime;
 	}
@@ -213,23 +263,26 @@ public class TvmShow {
 	}
 
 	public int getNumberOfSeasons() {
+		/*
+		 * Returns the number of seasons
+		 */
 		TvmEpisode latestEp;
 		int number = 0;
-		//try {
-			String epUrl = getPreEpUrl();
-			if (!epUrl.equals("No information")) {
-				latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(epUrl)));
-				number = latestEp.getSeason();
+
+		String epUrl = getPreEpUrl();
+		if (!epUrl.equals("No information")) {
+			latestEp = new TvmEpisode(Integer.parseInt(getEpisodeId(epUrl)));
+			number = latestEp.getSeason();
 		}
-		/*} catch (NumberFormatException) {
-			e.printStackTrace();
-		}*/
 		return number;
 	}
 
 	// TIME VALUES
 
 	private boolean checkTimeInfo() {
+		/*
+		 * Checks basic information about time values if sufficent to make AirDate
+		 */
 		String noInfo = "No information";
 		if (getPremiereDate().equals(noInfo) || getScheduleTime().equals(noInfo)) {
 			return false;
@@ -238,10 +291,16 @@ public class TvmShow {
 	}
 
 	public String getPremiereDate() {
+		/*
+		 * Gets the premiere date.
+		 */
 		return rootObject.get("premiered").isJsonNull() ? "No information" : rootObject.get("premiered").getAsString();
 	}
 
 	public String[] getScheduleDays() {
+		/*
+		 * Gets an array of days scheduled to air the show
+		 */
 		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
 		JsonArray jsDays = jsSchedule.getAsJsonArray("days");
 		if (jsDays.size() > 0) {
@@ -253,7 +312,9 @@ public class TvmShow {
 	}
 
 	public String getScheduleTime() {
-
+		/*
+		 * Gets the time values
+		 */
 		JsonObject jsSchedule = rootObject.getAsJsonObject("schedule");
 		String hour = jsSchedule.get("time").getAsString();
 		if (hour.equals(":") || hour.equals("")) {
@@ -263,6 +324,9 @@ public class TvmShow {
 	}
 
 	public String getTimeZone() {
+		/*
+		 * Returns the timezone of the shows airing times.
+		 */
 		String timeZone = "";
 		if (isWebSeries) {
 			JsonObject network = rootObject.getAsJsonObject("webChannel");
@@ -277,6 +341,9 @@ public class TvmShow {
 	}
 
 	private String getEpisodeId(String epUrl) {
+		/*
+		 * Gets the episode id from URL
+		 */
 		if (epUrl.length() > 30) {
 			return epUrl.substring(31);
 		}
@@ -284,6 +351,9 @@ public class TvmShow {
 	}
 
 	private String[] convJsonArray(JsonArray currJArray) {
+		/*
+		 * Converts a json array to a string array
+		 */
 		String[] currArray = new String[currJArray.size()];
 		converter = new Gson();
 		currArray = converter.fromJson(currJArray, String[].class);

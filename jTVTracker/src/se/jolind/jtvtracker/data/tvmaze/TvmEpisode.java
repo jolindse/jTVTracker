@@ -27,16 +27,13 @@ public class TvmEpisode {
 
 	public TvmEpisode(int id) {
 		sURL = epBaseUrl + Integer.toString(id);
-
-		// Connect to the URL using java's native library
 		URL url;
 		JsonElement root = null;
 		try {
 			url = new URL(sURL);
 			HttpURLConnection request = (HttpURLConnection) url.openConnection();
 			request.connect();
-			// Convert to a JSON object to print data
-			JsonParser jp = new JsonParser(); // from gson
+			JsonParser jp = new JsonParser(); 
 			root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -52,42 +49,70 @@ public class TvmEpisode {
 			e.printStackTrace();
 		}
 
-		rootObject = root.getAsJsonObject(); // May be an array, may be
+		rootObject = root.getAsJsonObject(); 
 	}
 
 	public String getName() {
+		/*
+		 * Returns episode name
+		 */
 		return rootObject.get("name").getAsString();
 	}
 
 	public int getSeason() {
+		/*
+		 * Returns episode season
+		 */
 		return rootObject.get("season").getAsInt();
 	}
 
 	public int getNumber() {
+		/*
+		 * Returns episode number
+		 */
 		return rootObject.get("number").getAsInt();
 	}
 
 	public String getAirDate() {
+		/*
+		 * Returns the airdate field as string
+		 */
 		return rootObject.get("airdate").getAsString();
 	}
 
 	public String getAirTime() {
+		/*
+		 * Returns the airtime field as string
+		 */
 		return rootObject.get("airtime").getAsString();
 	}
 
 	public String getAirStamp() {
+		/*
+		 * Returns the airstams field as string
+		 */
 		return rootObject.get("airstamp").getAsString();
 	}
 
 	public String getSummary() {
+		/*
+		 * Returns the episode summary
+		 */
 		return rootObject.get("summary").getAsString();
 	}
 
 	public String getsURL() {
+		/*
+		 * Returns the url for the episode
+		 */
 		return sURL;
 	}
 
 	public String[] getImgUrl() {
+		/*
+		 * Returns an array with urls to episode images if present in json,
+		 * if not returns reference to default picture to be used as placeholder.
+		 */
 		String[] imageArray = new String[2];
 		if (rootObject.get("image").isJsonNull()) {
 			imageArray[0] = "resources/noImage.png";

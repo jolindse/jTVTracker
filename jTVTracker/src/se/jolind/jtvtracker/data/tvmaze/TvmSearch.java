@@ -23,6 +23,10 @@ import com.google.gson.JsonParser;
 import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.gui.interfaces.IProgress;
 
+/*
+ * The search class wich parses search result from TvMaze.com
+ */
+
 public class TvmSearch {
 
 	private String searchBaseUrl = "http://api.tvmaze.com/search/shows?q=";
@@ -32,6 +36,9 @@ public class TvmSearch {
 	private Gson converter;
 
 	public TvmSearch(String searchString) {
+		/*
+		 * Initiates search and gets json response
+		 */
 		searchString = searchString.replace(" ", "+");
 		
 		progressListener = Controller.getListener();
@@ -54,6 +61,9 @@ public class TvmSearch {
 	}
 
 	private void buildList() {
+		/*
+		 * Builds a ArrayList with show information from search results
+		 */
 		resultList = new ArrayList<>();
 		
 		progressListener.initProgressBar(0, searchArray.size());
@@ -72,6 +82,11 @@ public class TvmSearch {
 	}
 
 	private ImageIcon makeImgIcon(String imgUrlString) {
+		/*
+		 * Makes an ImageIcon from an Image-url and resizes
+		 * if for display in search results
+		 */
+		
 		// Get image original size
 		boolean imgFromUrl = false;
 		URL imgUrl;
@@ -98,6 +113,10 @@ public class TvmSearch {
 	}
 	
 	private ImageIcon getDefaultIcon(){
+		/*
+		 * Returns the default placeholder image as icon resized for display
+		 * in search results
+		 */
 		Image mediumImg = null;
 		try {
 			mediumImg = ImageIO.read(new File("resources/noImage.png"));
@@ -111,6 +130,9 @@ public class TvmSearch {
 	}
 
 	private String getImageUrl(JsonObject rootObject) {
+		/*
+		 * Gets the image URL
+		 */
 		String imgUrl = "";
 		if (rootObject.get("image").isJsonNull()) {
 			imgUrl = "resources/noImage.png";
@@ -124,6 +146,10 @@ public class TvmSearch {
 	}
 
 	public List<TvmShortShow> getList() {
+		/*
+		 * Returns the list to display in the gui. Only top six
+		 * matches for the search term goes is being sent.
+		 */
 		List<TvmShortShow> listToFeed = new ArrayList<>();
 
 		if (resultList.size() > 6) {
@@ -137,12 +163,6 @@ public class TvmSearch {
 		}
 
 		return listToFeed;
-	}
-
-	public void printResults() {
-		for (TvmShortShow currShow : resultList) {
-			System.out.println(currShow);
-		}
 	}
 
 }
