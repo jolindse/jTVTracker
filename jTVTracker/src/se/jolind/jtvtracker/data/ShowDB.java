@@ -13,6 +13,15 @@ public class ShowDB {
 	
 	public ShowDB(){
 		showsDB = new HashMap<>();
+		
+		/*
+		 *  SQL QUERIE:
+		 *  
+		 *  INSERT INTO shows
+		 *  (
+		 *  
+		 */
+		
 	}
 	
 	public void addShow(int id, Show currShow){

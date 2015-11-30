@@ -66,7 +66,7 @@ public class Show {
 		
 		
 		// External values
-		id = currShow.getId();
+		this.id = id;
 		name = currShow.getName();
 		lang = currShow.getLang();
 		genres = currShow.getGenres();
@@ -77,7 +77,6 @@ public class Show {
 		summary = currShow.getSummary();
 		status = currShow.getStatusString();
 		showImg = createIcon();
-		
 
 		scanSeasons();
 		
@@ -465,6 +464,19 @@ public class Show {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	// METHOD TO EXTRACT INFO FOR DUMMY SHOWS IN DATABASE
+	
+	public void printShowForDb() {
+		System.out.println("(" + getId() + ",'" + getName() + "','" + getSummary() + "','" + getLang() + "','" + getNetwork() + "','" + getRuntime() + "','" + getStatusString() + "'," + updated + ")");
+				
+		for (int i = 1; i <= getNumberSeasons(); i++){
+			System.out.println("SEASON NUMBER " + i + "\n\n");
+			for (int j = 1; j <= getNumberOfEps(i); j++){
+				System.out.println(getEpisode(i, j));
+			}
 		}
 	}
 	

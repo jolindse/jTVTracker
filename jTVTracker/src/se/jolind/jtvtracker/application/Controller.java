@@ -7,6 +7,7 @@ import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.data.tvmaze.TvmSearch;
 import se.jolind.jtvtracker.gui.MainFrame;
+import se.jolind.jtvtracker.gui.interfaces.IButtonEvent;
 import se.jolind.jtvtracker.gui.interfaces.IProgress;
 import se.jolind.jtvtracker.gui.interfaces.ISearchRequest;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
@@ -15,7 +16,7 @@ import se.jolind.jtvtracker.gui.interfaces.IShowChange;
  *  The controller class wich acts as listener for all interfaces
  */
 
-public class Controller implements IShowChange, ISearchRequest, IProgress {
+public class Controller implements IShowChange, ISearchRequest, IProgress, IButtonEvent {
 
 	private static Controller listener;
 	private MainFrame view;
@@ -180,6 +181,12 @@ public class Controller implements IShowChange, ISearchRequest, IProgress {
 		 * Method to increase the progress on progressbar.
 		 */
 		view.increaseProgressBar();
+		
+	}
+
+	@Override
+	public void dumpData() {
+		currShow.printShowForDb();
 		
 	}
 	

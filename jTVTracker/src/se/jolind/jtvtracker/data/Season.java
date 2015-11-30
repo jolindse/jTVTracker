@@ -60,12 +60,13 @@ public class Season {
 	}
 
 	public void printSeasonEps() {
+		System.out.println("SEASON NUMBER " + getSeasonNumber() + " number of episodes " + getNumberOfEpisodes() +"\n" );
 		/*
 		 * Prints all episodes of the season to console
 		 */
-		System.out.println(episodeList);
-		for (int i = 1; i <= numberOfEpisodes; i++) {
+		for (int i = 1; i <= getNumberOfEpisodes(); i++) {
 			System.out.println(episodeList.get(i));
+			System.out.println("\n");
 		}
 	}
 

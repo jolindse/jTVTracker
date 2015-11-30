@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.Timestamp;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -192,10 +193,10 @@ public class Episode {
 
 	@Override
 	public String toString() {
-		return "Namn: " + name + "\nNummer " + number + "\nSändes:\n " + time.getZonedDateAsString() + " "
-				+ time.getZonedTimeAsString() + " " + timeZone + "\nLokal tid: " + time.getLocalTimeAsString() + " "
-				+ time.getLocalDateAsString() + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id
-				+ "\nBild urler: " + getImgMediumUrl() + " " + getImgFullUrl();
+		java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.from(getAirTime().getInstant());
+		return "(" + id + ",'" + getName() + "'," + getNumber() + ",'" + getSummary() + "," + sqlTimestamp + ")";  
+		
+		// return "Namn: " + name + "\nNummer " + number + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id + "\n\n";
 	}
 
 }
