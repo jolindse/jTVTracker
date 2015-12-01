@@ -34,6 +34,8 @@ public class ShowDB {
 	
 	public void addShow(Show currShow) throws SQLException{
 	
+		showId = currShow.getId();
+		
 		// Insert show in database
 		System.out.println("Inserting show:\n\n"); // TEST
 		stmt = conn.createStatement();
@@ -43,14 +45,14 @@ public class ShowDB {
 		System.out.println(showSql); // TEST
 		stmt.executeUpdate(showSql);
 		
-		
-		
 		ResultSet sqlResult = stmt.executeQuery("SELECT showId FROM shows WHERE showTvMazeId = " + showId+";");
 		int showSqlId = 0;
 		
 		while(sqlResult.next()){
 			showSqlId = sqlResult.getInt("showId");
 		}
+		
+		System.out.println("ShowId: " + showId + " SQLId: "+showSqlId); // TEST
 		
 		// Insert episodes
 		
@@ -74,11 +76,13 @@ public class ShowDB {
 				
 				int currEpId = currShow.getEpisode(i, j).getId();
 				int currEpSqlId = 0;
-				sqlResult = stmt.executeQuery("SELECT episodeId FROM episodes WHERE episodeId = "+currEpId+";");
-				while(sqlResult.next()){
-					currEpSqlId = sqlResult.getInt("episodeId");
+				ResultSet episodeSql = stmt.executeQuery("SELECT episodeId FROM episodes WHERE episodeTvMazeId = "+currEpId+";");
+				while(episodeSql.next()){
+					currEpSqlId = episodeSql.getInt("episodeId");
 				}
-				String currSeasonString = "("+showSqlId+","+currEpSqlId+","+i+")"; 
+				System.out.println("CurrEpId: " + currEpId + " SQLId: " + currEpSqlId); // TEST
+				String currSeasonString = "("+showSqlId+","+currEpSqlId+","+i+")";
+				System.out.println(currSeasonString); // TEST
 				seasonSql = "INSERT INTO seasons (seasonsShowId, seasonsEpisodeId, seasonsNumber) VALUES " + currSeasonString;
 				stmt.executeUpdate(seasonSql);
 				addSeasonString += currSeasonString + "\n";

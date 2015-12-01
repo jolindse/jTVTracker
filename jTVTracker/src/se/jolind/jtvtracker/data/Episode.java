@@ -81,7 +81,6 @@ public class Episode {
 		/*
 		 * Returns the episode summary.
 		 */
-		recap = recap.replaceAll("'", "");
 		return "<HTML>" + recap + "</HTML>";
 	}
 
@@ -199,7 +198,7 @@ public class Episode {
 	@Override
 	public String toString() {
 		
-		return "(" + id + ",'" + getName() + "'," + getNumber() + ",'" + getSummary() + "'," + getAirTime().getLongInstant() + ")";  
+		return "(" + id + ",'" + getName().replaceAll("'", "") + "'," + getNumber() + ",'" + getSummary().replaceAll("'", "") + "'," + getAirTime().getLongInstant() + ")";  
 		
 		// return "Namn: " + name + "\nNummer " + number + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id + "\n\n";
 	}
