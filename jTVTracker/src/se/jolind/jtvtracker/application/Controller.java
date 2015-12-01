@@ -1,10 +1,12 @@
 package se.jolind.jtvtracker.application;
 
-import javax.swing.JOptionPane;
+import java.sql.SQLException;
+
 import javax.swing.SwingWorker;
 
 import se.jolind.jtvtracker.data.InfoFormat;
 import se.jolind.jtvtracker.data.Show;
+import se.jolind.jtvtracker.data.ShowDB;
 import se.jolind.jtvtracker.data.tvmaze.TvmSearch;
 import se.jolind.jtvtracker.gui.MainFrame;
 import se.jolind.jtvtracker.gui.interfaces.IButtonEvent;
@@ -186,8 +188,14 @@ public class Controller implements IShowChange, ISearchRequest, IProgress, IButt
 
 	@Override
 	public void dumpData() {
-		currShow.printShowForDb();
-		
+	
+		try {
+			ShowDB dbConnect = new ShowDB();
+			dbConnect.addShow(currShow);
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

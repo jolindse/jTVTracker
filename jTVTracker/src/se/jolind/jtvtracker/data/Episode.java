@@ -59,6 +59,10 @@ public class Episode {
 		timeInfo = false;
 	}
 
+	public int getId() {
+		return id;
+	}
+	
 	public int getNumber() {
 		/*
 		 * Returns the number of the episode.
@@ -77,6 +81,7 @@ public class Episode {
 		/*
 		 * Returns the episode summary.
 		 */
+		recap = recap.replaceAll("'", "");
 		return "<HTML>" + recap + "</HTML>";
 	}
 
@@ -193,8 +198,8 @@ public class Episode {
 
 	@Override
 	public String toString() {
-		java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.from(getAirTime().getInstant());
-		return "(" + id + ",'" + getName() + "'," + getNumber() + ",'" + getSummary() + "," + sqlTimestamp + ")";  
+		
+		return "(" + id + ",'" + getName() + "'," + getNumber() + ",'" + getSummary() + "'," + getAirTime().getLongInstant() + ")";  
 		
 		// return "Namn: " + name + "\nNummer " + number + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id + "\n\n";
 	}

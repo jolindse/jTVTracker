@@ -140,5 +140,9 @@ public class AirTime {
 		 */
 		return absoluteTime;
 	}
-
+	
+	public long getLongInstant(){
+		return absoluteTime.toEpochMilli();
+	}
+	
 }

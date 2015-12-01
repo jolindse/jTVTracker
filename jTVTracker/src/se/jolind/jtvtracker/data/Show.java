@@ -162,6 +162,7 @@ public class Show {
 		/*
 		 * Returns the show summary
 		 */
+		summary = summary.replaceAll("'", "");
 		return "<HTML>" + summary + "</HTML>";
 	}
 
@@ -469,15 +470,19 @@ public class Show {
 
 	// METHOD TO EXTRACT INFO FOR DUMMY SHOWS IN DATABASE
 	
-	public void printShowForDb() {
-		System.out.println("(" + getId() + ",'" + getName() + "','" + getSummary() + "','" + getLang() + "','" + getNetwork() + "','" + getRuntime() + "','" + getStatusString() + "'," + updated + ")");
-				
+	public String getSqlShow() {
+		return "(" + getId() + ",'" + getName() + "','" + getSummary() + "','" + getLang() + "','" + getNetwork() + "','" + getRuntime() + "','" + getStatusString() + "'," + updated + ")";
+		/*		
 		for (int i = 1; i <= getNumberSeasons(); i++){
 			System.out.println("SEASON NUMBER " + i + "\n\n");
 			for (int j = 1; j <= getNumberOfEps(i); j++){
 				System.out.println(getEpisode(i, j));
 			}
 		}
+		*/
 	}
 	
+	public String getSqlEpisode(int seasonNr, int episodeNr){
+		return getEpisode(seasonNr, episodeNr).toString();
+	}
 }
