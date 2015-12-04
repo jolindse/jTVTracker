@@ -25,7 +25,7 @@ public class Show {
 	private TvmShow currShow;
 	private String name, lang, url, genres, network, summary, runtime, status;
 	private String time, date, timeZone;
-	private String[] days, imgArray;
+	private String[] days, genresArray, imgArray;
 	private int id, numberSeasons, latestEpisode, nextEpisode, updated;
 	private Map<Integer, Season> seasons;
 	private AirTime premTime;
@@ -74,6 +74,7 @@ public class Show {
 		runtime = currShow.getRuntime();
 		network = currShow.getNetwork();
 		days = currShow.getScheduleDays();
+		genresArray = currShow.getGenresArray();
 		summary = currShow.getSummary();
 		status = currShow.getStatusString();
 		showImg = createIcon();
@@ -135,6 +136,14 @@ public class Show {
 		 * Returns the language of the show
 		 */
 		return lang;
+	}
+	
+	public String[] getDays(){
+		return days;
+	}
+	
+	public String[] getGenresArray(){
+		return genresArray;
 	}
 	
 	public String getStatusString(){
