@@ -11,96 +11,146 @@ import java.sql.Statement;
  * all to be replaced by calls to SQL-database
  */
 public class ShowDB {
-	
-	private int showId; 
 
-	//private Map<Integer,Show> showsDB;
+	private int showId;
+
+	// private Map<Integer,Show> showsDB;
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	private static final String DB_URL = "jdbc:mysql://localhost/tvtracker";
-	private static final String USER = "root";
-	private static final String PASS = "pectus";
-	
+	private static final String USER = "dbuser";
+	private static final String PASS = "password";
+
 	private Connection conn = null;
 	private Statement stmt = null;
-	
-	
-	public ShowDB() throws ClassNotFoundException, SQLException{
-		
+
+	public ShowDB() throws ClassNotFoundException, SQLException {
+
 		Class.forName("com.mysql.jdbc.Driver");
 		System.out.println("Connecting to database...");
-		conn = DriverManager.getConnection(DB_URL,USER,PASS);
-		
+		conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
 	}
-	
-	public void addShow(Show currShow) throws SQLException{
-	
+
+	public void addShow(Show currShow) throws SQLException {
+
 		showId = currShow.getId();
-		
+
 		// Insert show in database
-		System.out.println("Inserting show:\n\n"); // TEST
 		stmt = conn.createStatement();
 		String showSql;
-		System.out.println(currShow.getSqlShow()); // TEST
-		showSql = "INSERT INTO shows (showTvMazeId, showName, showSummary, showLanguage, showNetwork, showRuntime, showStatus, showUpdated) VALUES " + currShow.getSqlShow()+";";
-		System.out.println(showSql); // TEST
+		showSql = "INSERT INTO shows (showTvMazeId, showName, showSummary, showLanguage, showNetwork, showRuntime, showStatus, showUpdated) VALUES "
+				+ currShow.getSqlShow() + ";";
 		stmt.executeUpdate(showSql);
-		
-		ResultSet sqlResult = stmt.executeQuery("SELECT showId FROM shows WHERE showTvMazeId = " + showId+";");
+
+		System.out.println("Add show:\n\n");
+		System.out.println(currShow.getSqlShow()+",");
+
+		ResultSet sqlResult = stmt.executeQuery("SELECT showId FROM shows WHERE showTvMazeId = " + showId + ";");
 		int showSqlId = 0;
-		
-		while(sqlResult.next()){
+
+		while (sqlResult.next()) {
 			showSqlId = sqlResult.getInt("showId");
 		}
-		
-		System.out.println("ShowId: " + showId + " SQLId: "+showSqlId); // TEST
-		
+
+		// Insert days
+
+		String[] daysArray = currShow.getDays();
+		System.out.println(daysArray); // TEST
+		System.out.println("\nAdd days:\n\n"); // TEST
+		for (String currDay : daysArray) {
+			System.out.println(currDay); // TEST
+			ResultSet daysResult = stmt.executeQuery("SELECT daysId FROM days WHERE daysName = '" + currDay + "';");
+			if (daysResult.next()) {
+				int dayId = daysResult.getInt("daysId");
+				String daysSqlString = "INSERT INTO showdays (showdaysDaysId,showdaysShowId) VALUES (" + dayId + ","
+						+ showSqlId + ")" + ";";
+				stmt.executeUpdate(daysSqlString);
+				System.out.println("(" + dayId + ","
+						+ showSqlId + ")" + ","); // TEST
+			}
+		}
+
+		// Insert genres
+
+		String[] genresArray = currShow.getGenresArray();
+		System.out.println("\nAdd genres:\n\n"); // TEST
+		for (String currGenre : genresArray)
+
+		{
+			ResultSet genresSqlId = stmt
+					.executeQuery("SELECT genresId FROM genres WHERE genresName = '" + currGenre + "';");
+			Integer genreId;
+			if (genresSqlId.next()) {
+				genreId = genresSqlId.getInt("genresId");
+				String genreSqlString = "INSERT INTO showgenres (showgenresShowId, showgenresGenreId) VALUES ("
+						+ showSqlId + "," + genreId + ");";
+				System.out.println("\nAdd show to genre list:\n\n"); // TEST
+				stmt.executeUpdate(genreSqlString);
+				System.out.println(genreSqlString); // TEST
+			} else {
+				genreId = 1;
+				String addGenreSql = "INSERT INTO genres (genresName) VALUES ('" + currGenre + "');";
+				System.out.println("\nAdding genre and show\n\n"); // TEST
+				stmt.executeUpdate(addGenreSql);
+				System.out.println(addGenreSql); // TEST
+				genresSqlId = stmt.executeQuery("SELECT genresId FROM genres WHERE genresName = '" + currGenre + "';");
+				if (genresSqlId.next()) {
+					genreId = genresSqlId.getInt("genresId");
+				}
+				String genreSqlString = "INSERT INTO showgenres (showgenresShowId, showgenresGenreId) VALUES ("
+						+ showSqlId + "," + genreId + ");";
+				stmt.executeUpdate(genreSqlString);
+				System.out.println(genreSqlString); // TEST
+			}
+		}
+
 		// Insert episodes
-		
-		System.out.println("\n\nInserting episodes:\n");
+
+		System.out.println("\nInserting episodes:\n"); // TEST
+
 		String epSql;
 		String seasonSql;
 		String addEpisodesString = "";
 		String addSeasonString = "";
-		
+
 		int numberSeasons = currShow.getNumberSeasons();
-		for (int i = 1; i <= numberSeasons; i++){
-			System.out.println("Season "+i+"\n\n");
+		for (int i = 1; i <= numberSeasons; i++)
+
+		{
 			int numberEps = currShow.getNumberOfEps(i);
-			for (int j = 1; j <= numberEps; j++){
+			for (int j = 1; j <= numberEps; j++) {
 				String currEpString = currShow.getSqlEpisode(i, j);
-				System.out.println(currEpString); // TEST
-				epSql = "INSERT INTO episodes (episodeTvMazeId, episodeName, episodeNr, episodeSummary, episodeInstant) VALUES " + currEpString+";";
-				System.out.println(epSql); // TEST
-				stmt.executeUpdate(epSql+";");
-				addEpisodesString += currEpString + "\n";
-				
+				epSql = "INSERT INTO episodes (episodeTvMazeId, episodeName, episodeNr, episodeSummary, episodeInstant) VALUES "
+						+ currEpString + ";";
+				stmt.executeUpdate(epSql + ";");
+				addEpisodesString += currEpString + ",\n";
+
 				int currEpId = currShow.getEpisode(i, j).getId();
 				int currEpSqlId = 0;
-				ResultSet episodeSql = stmt.executeQuery("SELECT episodeId FROM episodes WHERE episodeTvMazeId = "+currEpId+";");
-				while(episodeSql.next()){
+				ResultSet episodeSql = stmt
+						.executeQuery("SELECT episodeId FROM episodes WHERE episodeTvMazeId = " + currEpId + ";");
+				while (episodeSql.next()) {
 					currEpSqlId = episodeSql.getInt("episodeId");
 				}
-				System.out.println("CurrEpId: " + currEpId + " SQLId: " + currEpSqlId); // TEST
-				String currSeasonString = "("+showSqlId+","+currEpSqlId+","+i+")";
-				System.out.println(currSeasonString); // TEST
-				seasonSql = "INSERT INTO seasons (seasonsShowId, seasonsEpisodeId, seasonsNumber) VALUES " + currSeasonString;
+				String currSeasonString = "(" + showSqlId + "," + currEpSqlId + "," + i + ")";
+				seasonSql = "INSERT INTO seasons (seasonsShowId, seasonsEpisodeId, seasonsNumber) VALUES "
+						+ currSeasonString;
 				stmt.executeUpdate(seasonSql);
-				addSeasonString += currSeasonString + "\n";
+				addSeasonString += currSeasonString + ",\n";
 			}
 		}
-		System.out.println(addEpisodesString+"\n");
+		System.out.println(addEpisodesString + "\n");
 		System.out.println("Seasons add statements:\n");
 		System.out.println(addSeasonString);
+
 	}
-	
+
 	public void removeShow(int id) {
 		/*
-		if (showsDB.containsKey(id)){
-			showsDB.remove(id);
-		}
-		*/
+		 * if (showsDB.containsKey(id)){ showsDB.remove(id); }
+		 */
 	}
-	
+
 	public void getShow(int id) {
 		// return showsDB.get(id);
 	}

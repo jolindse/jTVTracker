@@ -178,6 +178,11 @@ public class TvmShow {
 		return strReturn;
 	}
 
+	public String[] getGenresArray() {
+		JsonArray jsGenre = rootObject.getAsJsonArray("genres");
+		return convJsonArray(jsGenre);
+	}
+	
 	public boolean getStatus() {
 		/*
 		 * Returns a boolean indicating if the show is still running
