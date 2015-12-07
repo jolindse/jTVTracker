@@ -2,7 +2,6 @@ package se.jolind.jtvtracker.data;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -11,11 +10,13 @@ import java.util.TimeZone;
 /*
  * Class to handle date and time values stored in show and episode
  */
+
 public class AirTime {
 
 
 	private ZonedDateTime origDateTime, localDateTime;
 	private Instant absoluteTime;
+	private ZoneId localZone, origZone;
 
 	public AirTime(String origTime, String origDate, String timeZone) {
 		// Parse input strings.
@@ -31,15 +32,25 @@ public class AirTime {
 		}
 		// Create instant from the date/time with timezone
 		TimeZone localTimeZone = Calendar.getInstance().getTimeZone(); 
-		ZoneId origZone = ZoneId.of(timeZone);
+		origZone = ZoneId.of(timeZone);
 		origDateTime = ZonedDateTime.of(dateArray[0], dateArray[1], dateArray[2], timeArray[0], timeArray[1], 0, 0,
 				origZone);
 		// Create instant for use with system timezone
 		absoluteTime = origDateTime.toInstant();
 		// Make local time
-		ZoneId localZone = ZoneId.of(localTimeZone.getDisplayName(false, TimeZone.SHORT));
+		localZone = ZoneId.of(localTimeZone.getDisplayName(false, TimeZone.SHORT));
 		localDateTime = ZonedDateTime.ofInstant(absoluteTime, localZone);
 		
+	}
+	
+	public AirTime(Long timestamp, String timezone){
+		absoluteTime = Instant.ofEpochMilli(timestamp);
+		TimeZone localTimeZone = Calendar.getInstance().getTimeZone();
+		localZone = ZoneId.of(localTimeZone.getDisplayName(false,TimeZone.SHORT));
+		origZone = ZoneId.of(timezone);
+		
+		origDateTime = ZonedDateTime.ofInstant(absoluteTime,origZone);
+		localDateTime = ZonedDateTime.ofInstant(absoluteTime, localZone);
 	}
 
 	public ZonedDateTime getLocalTime() {
@@ -140,9 +151,13 @@ public class AirTime {
 		 */
 		return absoluteTime;
 	}
-	
+
 	public long getLongInstant(){
 		return absoluteTime.toEpochMilli();
+	}
+	
+	public String getOrigZone(){
+		return origZone.toString();
 	}
 	
 }

@@ -20,6 +20,7 @@ public class Episode {
 	private int number, id;
 	private String epDate, recap, url, timeZone, name;
 	private String[] imgArray;
+	private ImageIcon episodeImg;
 	private boolean timeInfo;
 	private AirTime time;
 
@@ -43,6 +44,17 @@ public class Episode {
 		if (timeInfo) {
 			time = new AirTime(zClock, epDate, timeZone);
 		}
+		episodeImg = makeMediumImg();
+	}
+	
+	public Episode(int id, String name, int number, String recap, String url, ImageIcon episodeImg, long timestamp){
+		this.id = id;
+		this.name = name;
+		this.number = number;
+		this.recap = recap;
+		this.url = url;
+		this.episodeImg = episodeImg;
+		// Make AirTime from timestamp.
 	}
 
 	public Episode() {
@@ -153,7 +165,11 @@ public class Episode {
 		return time;
 	}
 
-	public ImageIcon getMediumImg() {
+	public ImageIcon getMediumImg(){
+		return episodeImg;
+	}
+	
+	private ImageIcon makeMediumImg() {
 		/*
 		 * Returns a ImageIcon of the medium image of the episode 
 		 */
@@ -198,7 +214,7 @@ public class Episode {
 	@Override
 	public String toString() {
 		
-		return "(" + id + ",'" + getName().replaceAll("'", "") + "'," + getNumber() + ",'" + getSummary().replaceAll("'", "") + "'," + getAirTime().getLongInstant() + ")";  
+		return "(" + id + ",'" + getName().replaceAll("'", "") + "'," + getNumber() + ",'" + getSummary().replaceAll("'", "") + "'," + getAirTime().getLongInstant() +",'" + getAirTime().getOrigZone() +"')";  
 		
 		// return "Namn: " + name + "\nNummer " + number + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id + "\n\n";
 	}
