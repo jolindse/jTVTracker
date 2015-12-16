@@ -11,7 +11,7 @@ public class InfoFormat {
 	private String timeZone, epZonedTime, epLocalTime, shZonedTime, shLocalTime, days, localdays, premYear, endYear;
 	private ImageIcon shImage, epImage;
 
-	boolean activeShow, episodes, hasNext;
+	boolean activeShow, episodes, hasNext, favoriteShow;
 
 	// Internal variables
 	private String NEWLINE = "<BR>";
@@ -63,8 +63,8 @@ public class InfoFormat {
 		shStatus = currShow.getStatusString();
 		language = currShow.getLang();
 		runtime = currShow.getRuntime();
-
 		shImage = currShow.getMediumImg();
+		favoriteShow = currShow.getFavoriteShow();
 
 		// Time info
 		premYear = currShow.getPremYear();
@@ -104,6 +104,10 @@ public class InfoFormat {
 		 * Returns the boolean true if the show has seasons and episode information
 		 */
 		return episodes;
+	}
+	
+	public boolean isFavorite() {
+		return favoriteShow;
 	}
 
 	public String getShowName() {

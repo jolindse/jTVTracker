@@ -137,8 +137,8 @@ public class TvmShow {
 		JsonObject links = rootObject.getAsJsonObject("_links");
 		String strReturn = "No information";
 		try {
-			JsonObject previous = links.getAsJsonObject("nextepisode");
-			strReturn = previous.get("href").getAsString();
+			JsonObject nextep = links.getAsJsonObject("nextepisode");
+			strReturn = nextep.get("href").getAsString();
 		} catch (NullPointerException e) {
 		}
 		return strReturn;

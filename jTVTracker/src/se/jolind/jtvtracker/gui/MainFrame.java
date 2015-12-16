@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 
 import se.jolind.jtvtracker.application.Controller;
 import se.jolind.jtvtracker.data.InfoFormat;
+import se.jolind.jtvtracker.data.Show;
 import se.jolind.jtvtracker.data.tvmaze.TvmShortShow;
 import se.jolind.jtvtracker.gui.interfaces.IShowChange;
 
@@ -29,7 +30,7 @@ public class MainFrame extends JFrame {
 	private ShowPanel showPanel;
 	private EpisodePanel episodePanel;
 	private SearchPanel searchPanel;
-	private NextEpPanel nextEpPanel;
+	private FavoritesPanel favoritesPanel;
 	private JTabbedPane contentPane;
 	
 	private boolean showTab, episodeTab;
@@ -97,12 +98,12 @@ public class MainFrame extends JFrame {
 		searchPanel = new SearchPanel();
 		showPanel = new ShowPanel();
 		episodePanel = new EpisodePanel();
-		nextEpPanel = new NextEpPanel();
+		favoritesPanel = new FavoritesPanel();
 
 		contentPane = new JTabbedPane(JTabbedPane.TOP);
 				
 		contentPane.addTab("Search", searchPanel);
-		contentPane.addTab("Schedule", nextEpPanel);
+		contentPane.addTab("Favorites", favoritesPanel);
 
 		showTab = false;
 		episodeTab = false;
@@ -155,7 +156,7 @@ public class MainFrame extends JFrame {
 			} else {
 				episodeTab = false;
 			}
-		contentPane.addTab("Schedule", nextEpPanel);
+		contentPane.addTab("Favorites", favoritesPanel);
 		
 	}
 
@@ -173,7 +174,11 @@ public class MainFrame extends JFrame {
 			contentPane.setSelectedIndex(2);
 			
 		}
-		
+	}
+
+	public void updateFavs(List<Show> favShows){
+		// favoritesPanel = new FavoritesPanel();
+		favoritesPanel.updateInfo(favShows);
 	}
 	
 	public void newShow() {

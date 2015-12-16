@@ -1,7 +1,7 @@
 package se.jolind.jtvtracker.data;
 
 import java.awt.Image;
-
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,19 +46,18 @@ public class Episode {
 		}
 		episodeImg = makeMediumImg();
 	}
-	
-	public Episode(int id, String name, int number, String recap, String url, ImageIcon episodeImg, long timestamp){
+
+	public Episode(int id, String name, int number, String recap) {
 		this.id = id;
 		this.name = name;
 		this.number = number;
 		this.recap = recap;
-		this.url = url;
-		this.episodeImg = episodeImg;
-		// Make AirTime from timestamp.
-	}
+		this.url = "http://api.tvmaze.com/episodes/" + id;
+		}
 
 	public Episode() {
-		// Dummy episode constructor used when no information is available except the existance of 
+		// Dummy episode constructor used when no information is available
+		// except the existance of
 		// an episode.
 		this.id = 0;
 		this.name = "No information";
@@ -74,7 +73,7 @@ public class Episode {
 	public int getId() {
 		return id;
 	}
-	
+
 	public int getNumber() {
 		/*
 		 * Returns the number of the episode.
@@ -114,7 +113,7 @@ public class Episode {
 		/*
 		 * Returns the end year of the show
 		 */
-		
+
 		if (timeInfo) {
 			return time.getYear();
 		}
@@ -165,13 +164,36 @@ public class Episode {
 		return time;
 	}
 
-	public ImageIcon getMediumImg(){
+	public void setAirTime(AirTime currAirTime) {
+		timeInfo = true;
+		time = currAirTime;
+		epDate = time.getZonedDateAsString();
+	}
+
+	public ImageIcon getMediumImg() {
 		return episodeImg;
 	}
-	
+
+	public BufferedImage getBufferedImage() {
+		Image currImg = episodeImg.getImage();
+		BufferedImage bufferedImg = (BufferedImage) currImg;
+		return bufferedImg;
+	}
+
+	public void setImage(String imgPath) {
+		BufferedImage mediumImg = null;
+		try {
+			mediumImg = ImageIO.read(new File(imgPath));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		episodeImg = new ImageIcon(mediumImg);
+	}
+
 	private ImageIcon makeMediumImg() {
 		/*
-		 * Returns a ImageIcon of the medium image of the episode 
+		 * Returns a ImageIcon of the medium image of the episode
 		 */
 		URL imgUrl;
 		Image mediumImg = null;
@@ -213,10 +235,9 @@ public class Episode {
 
 	@Override
 	public String toString() {
-		
-		return "(" + id + ",'" + getName().replaceAll("'", "") + "'," + getNumber() + ",'" + getSummary().replaceAll("'", "") + "'," + getAirTime().getLongInstant() +",'" + getAirTime().getOrigZone() +"')";  
-		
-		// return "Namn: " + name + "\nNummer " + number + "\nSummering: " + recap + "\nUrl: " + url + "\nId: " + id + "\n\n";
+
+		return "(" + id + ",'" + getName().replaceAll("'", "") + "'," + getNumber() + ",'"
+				+ getSummary().replaceAll("'", "") + "'," + getAirTime().getLongInstant() + ")";
 	}
 
 }
